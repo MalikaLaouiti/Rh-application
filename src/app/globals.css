@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 220.9 39.3% 11%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 71.4% 4.1%;
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 210 20% 98%;
+    --primary-foreground: 220.9 39.3% 11%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 12.2% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1010; /* Ensure it's above the overlay */
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+
+.department {
+  width: 100%; /* Makes the select element responsive */
+  background-color: #ffffff; /* White background */
+  color: #333333; /* Dark gray text */
+  appearance: none; /* Removes the default arrow in some browsers */
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color 0.3s ease; /* Smooth transition for hover/focus */
+  font-size: 14px;
+}
+
+.department:hover {
+  border-color: #555555; /* Slightly lighter border on hover */
+}
+
+.department:focus {
+  outline: none; /* Removes the default blue outline */
+  border-color: #000000; /* Keeps the border black on focus */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* Adds a subtle shadow for focus state */
+}
+
+.department option {
+  background-color: #ffffff; /* White background for options */
+  color: #333333; /* Dark gray text */
+}
+
+/* Style for the radio input */
+.radio-input {
+  appearance: none; /* Remove default radio button styling */
+  width: 1.2rem; /* Increase size for better visibility */
+  height: 1.2rem; /* Increase size for better visibility */
+  border: 2px solid #ddd; /* Light gray border */
+  border-radius: 50%; /* Circular shape */
+  outline: none; /* Remove default focus outline */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.2s ease, border-color 0.2s ease; /* Smooth transitions */
+  position: relative; /* Position for custom checkmark */
+  background-color: #fff; /* White background */
+}
+
+/* Style for checked state */
+.radio-input:checked {
+  border-color: #000000; /* Blue border when selected */
+}
+
+/* Custom checkmark */
+.radio-input:checked::before {
+  content: ''; /* Empty content */
+  position: absolute; /* Absolute positioning within radio button */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  width: 0.75rem; /* Smaller circle for the checkmark */
+  height: 0.75rem; /* Smaller circle for the checkmark */
+  border-radius: 50%; /* Circular checkmark */
+  background-color: #000000; /* Blue checkmark */
+  transform: translate(-50%, -50%); /* Center the checkmark */
+}
+
+/* Style for the label */
+.radio-label {
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 1rem; /* Font size */
+  color: #333; /* Dark gray color */
+  display: flex; /* Flexbox for alignment */
+  align-items: center; /* Center items vertically */
+  gap: 0.5rem; /* Space between radio button and label text */
+  margin-left: 0.5rem; /* Space between the radio button and text */
+}
+
+/* Additional styling for focus state */
+.radio-input:focus {
+  border-color: #000000; /* Blue border on focus */
+  box-shadow: 0 0 0 2px rgba(38, 143, 255, 0.2); /* Soft blue glow on focus */
+}
+
+/* Remove default focus outline and border color */
+.custom-select__control {
+  background-color: #000; /* Black background for the select box */
+  color: #fff; /* White text color */
+  border: 1px solid #444; /* Darker border color */
+  box-shadow: none; /* Remove default box-shadow */
+  outline: none; /* Remove the default focus outline */
+  margin-bottom: 10px;
+}
+
+/* Change border color and box-shadow on focus */
+.custom-select__control:focus,
+.custom-select__control--is-focused {
+  border-color: #888; /* Lighter border on focus */
+  box-shadow: 0 0 0 1px #888; /* Subtle box-shadow on focus */
+  outline: none; /* Ensure no focus outline */
+}
+
+.custom-select__control:hover {
+  border-color: #888; /* Lighter border on hover */
+}
+
+.custom-select__single-value {
+  color: #fff; /* White text color */
+}
+
+.custom-select__indicator-separator {
+  display: none; /* Remove the separator */
+}
+
+.custom-select__indicator {
+  color: #fff; /* White color for the dropdown arrow */
+}
+
+.custom-select__menu {
+  background-color: #000; /* Black background for the dropdown menu */
+  border-color: #444; /* Darker border color */
+}
+
+.custom-select__option {
+  background-color: #000; /* Black background for options */
+  color: #fff; /* White text color */
+  cursor: pointer;
+}
+
+.custom-select__option:hover {
+  background-color: #333; /* Dark grey background on hover */
+}
+
+.custom-select__option--is-focused {
+  background-color: #333; /* Dark grey background when focused */
+}
+
+.custom-select__option--is-selected {
+  background-color: #444; /* Slightly lighter grey background when selected */
+}
