@@ -3,7 +3,6 @@ import React from 'react';
 interface ToastProps {
   title: string;
   description: string;
-<<<<<<< HEAD
   variant?: 'default' | 'destructive'; // Add variant to the props
   onClose?: () => void;
 }
@@ -14,14 +13,6 @@ const Toast: React.FC<ToastProps> = ({ title, description, variant = 'default', 
 
   return (
     <div style={containerStyle}>
-=======
-  onClose?: () => void;
-}
-
-const Toast: React.FC<ToastProps> = ({ title, description, onClose }) => {
-  return (
-    <div style={styles.container}>
->>>>>>> 2b5d48454d962a6476a7748a906c41946472996b
       <div style={styles.header}>
         <strong>{title}</strong>
         {onClose && (
@@ -52,7 +43,7 @@ const styles = {
     zIndex: 1000,
     maxWidth: '320px',
   },
-<<<<<<< HEAD
+
   destructiveContainer: {
     position: 'fixed' as 'fixed',
     bottom: '20px',
@@ -65,8 +56,7 @@ const styles = {
     zIndex: 1000,
     maxWidth: '320px',
   },
-=======
->>>>>>> 2b5d48454d962a6476a7748a906c41946472996b
+
   header: {
     display: 'flex',
     justifyContent: 'space-between',

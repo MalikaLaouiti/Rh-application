@@ -7,7 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-button";
 import { Toast } from "@/components/ui/toast";
-import { LockIcon, UserIcon } from "lucide-react";
+import {  LockIcon, UserIcon } from "lucide-react";
+import Link from 'next/link';
+
+import { Checkbox } from "@radix-ui/react-checkbox";
 
 export default function Login() {
   return (
@@ -25,13 +28,15 @@ export default function Login() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
+              
               <Link
-                href="#"
+                href="/Login/Reset-MDP"
                 className="text-sm font-medium underline underline-offset-4 hover:text-primary"
                 prefetch={false}
               >
                 Forgot password?
               </Link>
+              
             </div>
             <Input id="password" type="password" placeholder="Enter your password" />
           </div>
