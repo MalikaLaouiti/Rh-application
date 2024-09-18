@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { toast } from "@/components/ui/use-toast"
+import { Toast } from "@/components/ui/toast"
 import { UserIcon, CalendarIcon, ClockIcon } from "lucide-react"
 
 // Mock data for the employee
@@ -27,7 +27,7 @@ export default function EmployeeDashboard() {
 
   const handleLeaveRequest = () => {
     // Here you would typically send this data to your backend
-    toast({
+    Toast({
       title: "Demande de congé",
       description: "Votre demande de congé a été soumise avec succès.",
     })
