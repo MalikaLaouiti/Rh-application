@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -51,12 +52,16 @@ export default function EmployeeDashboard() {
       <CardContent className="grid gap-4 md:grid-cols-3">
         <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
           <DialogTrigger asChild>
+            <div className="flex justify-center">
+              <a href="/Account">
             <Button variant="outline" className="w-full">
               <UserIcon className="mr-2 h-4 w-4" />
               Mon compte
             </Button>
+            </a>
+            </div>
           </DialogTrigger>
-          <DialogContent>
+          {/* <DialogContent>
             <DialogHeader>
               <DialogTitle>Informations du compte</DialogTitle>
               <DialogDescription>Vos informations personnelles</DialogDescription>
@@ -79,17 +84,21 @@ export default function EmployeeDashboard() {
                 <span className="col-span-3">{employeeData.department}</span>
               </div>
             </div>
-          </DialogContent>
+          </DialogContent> */}
         </Dialog>
 
         <Dialog open={isLeaveBalanceDialogOpen} onOpenChange={setIsLeaveBalanceDialogOpen}>
           <DialogTrigger asChild>
+          <div className="flex justify-center">
+          <a href="/Holiday/Solde">
             <Button variant="outline" className="w-full">
               <CalendarIcon className="mr-2 h-4 w-4" />
               Solde de congés
             </Button>
+            </a>
+          </div>
           </DialogTrigger>
-          <DialogContent>
+          {/* <DialogContent>
             <DialogHeader>
               <DialogTitle>Solde de congés</DialogTitle>
               <DialogDescription>Votre solde de congés actuel</DialogDescription>
@@ -108,15 +117,19 @@ export default function EmployeeDashboard() {
                 <span className="col-span-3">{employeeData.leaveBalance.personal} jours</span>
               </div>
             </div>
-          </DialogContent>
+          </DialogContent> */}
         </Dialog>
 
         <Dialog open={isLeaveRequestDialogOpen} onOpenChange={setIsLeaveRequestDialogOpen}>
           <DialogTrigger asChild>
+          <div className="flex justify-center">
+          <a href="/Holiday/Demande">
             <Button variant="outline" className="w-full">
               <ClockIcon className="mr-2 h-4 w-4" />
               Demande de congé
             </Button>
+          </a>
+          </div>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>

@@ -1,7 +1,6 @@
 import React from 'react';
-import EmployeeDashboard from '../components/component/EmployeeDashboard';
-
-const HomePage = () => {
+import EmployeeDashboard from '@/components/component/employee-dashboard';
+const EmpDashPage = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       <EmployeeDashboard />
@@ -9,4 +8,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default EmpDashPage;
