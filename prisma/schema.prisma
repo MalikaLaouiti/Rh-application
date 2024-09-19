@@ -12,3 +12,63 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Employee {
+    id                       Int        @id @default(autoincrement()) // Unique Employee ID
+    first_name               String                                     // First Name
+    last_name                String                                     // Last Name
+    gender                   String                                     // Gender (e.g., 'Male', 'Female', etc.)
+    date_of_birth            DateTime                                  // Date of Birth
+    place_of_birth           String?                                    // Place of Birth (Optional)
+    nationality              String?                                    // Nationality (Optional)
+    identification_number    String?    @unique                         // National Identification Number (Optional)
+    unique_identification_number String? @unique                        // Unique ID for tax/government (Optional)
+    
+    phone_number             String?                                    // Phone Number (Optional)
+    email                    String     @unique                         // Email Address
+    address                  String?                                    // Residential Address (Optional)
+    emergency_contact_name   String?                                    // Emergency Contact Name (Optional)
+    emergency_contact_phone  String?                                    // Emergency Contact Phone (Optional)
+    
+    job_title                String                                     // Job Title
+    department               Department? @relation(fields: [department_id], references: [id]) // Foreign Key to Department Table (Optional)
+    department_id            Int?                                       // Department Foreign Key
+    manager                  Employee?  @relation("ManagerEmployees", fields: [manager_id], references: [id]) // Foreign Key to Manager (Self-referencing Employee)
+    manager_id               Int?                                       // Manager Foreign Key
+    employment_status        String     @default("Active")              // Employment Status
+    hire_date                DateTime                                  // Date of Hire
+    job_nomination_date      DateTime?                                  // Date of Job Nomination (Optional)
+    work_location            String?                                    // Work Location (Office/Remote, Optional)
+    
+    salary                   Float?                                     // Salary (Optional)
+    grade                    String?                                    // Job Grade (Optional)
+    benefits                 String?                                    // Benefits (Optional)
+    bonuses                  Float?                                     // Bonuses (Optional)
+    
+    total_leave_balance      Int        @default(0)                      // Total Leave Balance (in days)
+    leave_type               String?                                    // Type of Leave (Optional)
+    remaining_leave_balance  Int        @default(0)                      // Remaining Leave Balance (in days)
+    attendance_records       Json?                                      // Attendance Records (stored as JSON)
+    
+    specialization           String?                                    // Specialization/Expertise (Optional)
+    education                String?                                    // Educational Qualifications (Optional)
+    training_certifications  String?                                    // Training and Certifications (Optional)
+    
+    marital_status           String     @default("Single")              // Marital Status
+    dependents_count         Int        @default(0)                     // Number of Dependents
+    
+    disability_status        Boolean    @default(false)                 // Disability Status
+    work_authorization       String?                                    // Work Authorization (Visa/Permit info, Optional)
+    
+    createdAt                DateTime   @default(now())                 // Record Creation Timestamp
+    updatedAt                DateTime   @updatedAt                      // Last Updated Timestamp
+
+    // Relations
+    employees                Employee[] @relation("ManagerEmployees")   // Self-referencing relation for subordinates
+}
+
+model Department {
+    id        Int       @id @default(autoincrement())
+    name      String
+    employees Employee[]
+}
