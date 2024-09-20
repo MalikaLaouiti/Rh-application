@@ -8,6 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
  import { Toast } from '@/components/ui/toast';
 import "@/app/globals.css";
+import {PrismaClient} from '@prisma/client';
+
+const db= new PrismaClient();
 
 const departmentOptions = [
   { value: 'rh', label: 'Ressources Humaines' },
@@ -48,6 +51,7 @@ export default function Form() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Ici, vous ajouteriez la logique pour envoyer les données à votre backend
+    const user =  db.employee.create({formData});
     console.log("Données de l'employé soumises:", formData);
     Toast({
       title: "Employé ajouté",
