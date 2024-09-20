@@ -14,61 +14,101 @@ datasource db {
 }
 
 model Employee {
-    id                       Int        @id @default(autoincrement()) // Unique Employee ID
-    first_name               String                                     // First Name
-    last_name                String                                     // Last Name
-    gender                   String                                     // Gender (e.g., 'Male', 'Female', etc.)
-    date_of_birth            DateTime                                  // Date of Birth
-    place_of_birth           String?                                    // Place of Birth (Optional)
-    nationality              String?                                    // Nationality (Optional)
-    identification_number    String?    @unique                         // National Identification Number (Optional)
-    unique_identification_number String? @unique                        // Unique ID for tax/government (Optional)
-    
-    phone_number             String?                                    // Phone Number (Optional)
-    email                    String     @unique                         // Email Address
-    address                  String?                                    // Residential Address (Optional)
-    emergency_contact_name   String?                                    // Emergency Contact Name (Optional)
-    emergency_contact_phone  String?                                    // Emergency Contact Phone (Optional)
-    
-    job_title                String                                     // Job Title
-    department               Department? @relation(fields: [department_id], references: [id]) // Foreign Key to Department Table (Optional)
-    department_id            Int?                                       // Department Foreign Key
-    manager                  Employee?  @relation("ManagerEmployees", fields: [manager_id], references: [id]) // Foreign Key to Manager (Self-referencing Employee)
-    manager_id               Int?                                       // Manager Foreign Key
-    employment_status        String     @default("Active")              // Employment Status
-    hire_date                DateTime                                  // Date of Hire
-    job_nomination_date      DateTime?                                  // Date of Job Nomination (Optional)
-    work_location            String?                                    // Work Location (Office/Remote, Optional)
-    
-    salary                   Float?                                     // Salary (Optional)
-    grade                    String?                                    // Job Grade (Optional)
-    benefits                 String?                                    // Benefits (Optional)
-    bonuses                  Float?                                     // Bonuses (Optional)
-    
-    total_leave_balance      Int        @default(0)                      // Total Leave Balance (in days)
-    leave_type               String?                                    // Type of Leave (Optional)
-    remaining_leave_balance  Int        @default(0)                      // Remaining Leave Balance (in days)
-    attendance_records       Json?                                      // Attendance Records (stored as JSON)
-    
-    specialization           String?                                    // Specialization/Expertise (Optional)
-    education                String?                                    // Educational Qualifications (Optional)
-    training_certifications  String?                                    // Training and Certifications (Optional)
-    
-    marital_status           String     @default("Single")              // Marital Status
-    dependents_count         Int        @default(0)                     // Number of Dependents
-    
-    disability_status        Boolean    @default(false)                 // Disability Status
-    work_authorization       String?                                    // Work Authorization (Visa/Permit info, Optional)
-    
-    createdAt                DateTime   @default(now())                 // Record Creation Timestamp
-    updatedAt                DateTime   @updatedAt                      // Last Updated Timestamp
+    id                       Int        @id @default(autoincrement())   // ID unique de l'employé
+    name                     String                                    // Prénom
+    gender                   String                                    // Sexe (ex. : 'Homme', 'Femme', etc.)
+    date_of_birth            DateTime                                  // Date de naissance
+    place_of_birth           String?                                   // Lieu de naissance
+    identification_number    String?    @unique                        // Numéro d'identification nationale
 
-    // Relations
-    employees                Employee[] @relation("ManagerEmployees")   // Self-referencing relation for subordinates
+    phone_number             String?                                   // Numéro de téléphone
+    email                    String     @unique                        // Adresse email
+    address                  String?                                   // Adresse résidentielle
+    emergency_contact        String?                                   // Contact d'urgence
+
+    job_title                String                                    // Titre du poste
+    department               Department? @relation(fields: [department_id], references: [id]) // Clé étrangère vers la table des départements (Optionnel)
+    department_id            Int?                                      // Clé étrangère du département
+    manager                  Employee?  @relation("ManagerEmployees", fields: [manager_id], references: [id]) // Clé étrangère vers le responsable (auto-référence de l'employé)
+    manager_id               Int?                                      // Clé étrangère du responsable
+    hire_date                DateTime                                  // Date d'embauche
+
+    salary                   Float?                                    // Salaire (Optionnel)
+    grade                    String?                                   // Grade de l'emploi (Optionnel)
+    total_leave_balance      Int        @default(0)                    // Solde total de congés (en jours)
+    remaining_leave_balance  Int        @default(0)                    // Solde de congés restants (en jours)
+    // attendance_records       Json?                                    // Registres de présence (enregistrés sous forme de JSON)
+
+    education                String?                                   // Diplômes et qualifications (Optionnel)
+    marital_status           String     @default("Single")             // État civil
+    dependents_count         Int        @default(0)                    // Nombre de personnes à charge
+    disability_status        Boolean    @default(false)                // Statut de handicap
+    employees                Employee[] @relation("ManagerEmployees")  // Relation auto-référencée pour les subordonnés
+
+    // Relations with Conge model
+    conge_requests           Conge[]                                   // Congés demandés par l'employé
+    
+    // Relations with DemandeConge model
+    ApproveDemande           DemandeConge[]     @relation("ApprovalRelation")                              // demande de conge par l'employé
+    Employe                  DemandeConge[] @relation() 
+
+    // Relations with Document model
+    Document_archif           Document[]                                   // demande de conge par l'employé
 }
 
 model Department {
-    id        Int       @id @default(autoincrement())
-    name      String
-    employees Employee[]
+    id        Int       @id @default(autoincrement())   // ID unique du département
+    name      String                                   // Nom du département
+    employees Employee[]                               // Liste des employés dans ce département
+}
+
+model Conge {
+  id               Int       @id @default(autoincrement())
+  demandeCongeId   Int       @unique // Link back to the original request
+  demandeConge     DemandeConge @relation(fields: [demandeCongeId], references: [id])
+  employee         Employee   @relation(fields: [employeeId], references: [id])
+  employeeId      Int
+  startDate       DateTime   // Start date of the leave
+  endDate         DateTime   // End date of the leave
+  leaveType       String     // e.g., "annual", "sick", "maternity"
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Optionally include fields for status or other details if needed
+}
+
+
+model DemandeConge {
+  id              Int       @id @default(autoincrement())
+  employee        Employee  @relation(fields: [employeeId], references: [id])
+  employeeId      Int
+  startDate       DateTime
+  endDate         DateTime
+  leaveType       String    // e.g., "annual", "sick", "maternity"
+  status          String    @default("Pending") // e.g., "pending", "approved", "rejected"
+  requestedAt     DateTime  @default(now())
+  approvedAt      DateTime? // Optional date when approved
+  approvedBy      Employee?  @relation("ApprovalRelation", fields: [approvedById], references: [id])
+  approvedById    Int?      // Optional foreign key to the approving manager
+
+  // Optionally add fields for reasons or notes if needed
+  reason          String?   // Reason for the leave
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  //Relation congee
+  iddemande                Conge[]   @relation()    // Congés approuvés par cet employé
+}
+
+
+model Document {
+  id              Int       @id @default(autoincrement())
+  employeeId      Int
+  titre           String
+  url             String    // URL or path to the document
+  type            String    // e.g., "contract", "certificate"
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  employee        Employee  @relation(fields: [employeeId], references: [id])
 }
