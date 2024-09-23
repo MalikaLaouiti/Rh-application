@@ -17,29 +17,29 @@ export async function createAccount(User: Employee) {
     const user = await db.employee.create({
       data: User
     });
-    if (!user) throw new Error("Error creating articles");
+    if (!user) throw new Error("Error creating user: " + user);
     // revalidatePath("/viewdata/stocks");
-    return { Response: { message: "Articles Created" } };
+    return { Response: { message: "User Created" } };
   } 
   catch (error: any) {
     return { Error: error?.message };
   }
 }
 
-export async function updateArticles(User: Employee[]) {
-  const updatePromises = User.map((Article) =>
+export async function updateUsers(User: Employee[]) {
+  const updatePromises = User.map((User) =>
     db.employee.update({
-      where: { id: Article.id },
+      where: { id: User.id },
       data: {
-        ...Article,
+        ...User,
       },
     })
   );
   try {
     const User = await Promise.all(updatePromises);
-    if (!User) throw new Error("Error updating articles");
-    revalidatePath("/viewdata/stocks");
-    return { Response: { message: "Articles Updated" } };
+    if (!User) throw new Error("Error updating user");
+    // revalidatePath("/viewdata/stocks");
+    return { Response: { message: "User Updated" } };
   } catch (error: any) {
     return { Error: error?.message };
   }

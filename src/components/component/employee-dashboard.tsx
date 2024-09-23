@@ -21,7 +21,7 @@ const employeeData = {
   },
 }
 
-export default function EmployeeDashboard() {
+export default function EmployeeDashboard({ idUser }: { idUser: number }) {
   const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false)
   const [isLeaveBalanceDialogOpen, setIsLeaveBalanceDialogOpen] = useState(false)
   const [isLeaveRequestDialogOpen, setIsLeaveRequestDialogOpen] = useState(false)
