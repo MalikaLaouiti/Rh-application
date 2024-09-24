@@ -1,188 +1,266 @@
 "use client"
-import React, { useState } from 'react';
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import Select from 'react-select';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
- import { Toast } from '@/components/ui/toast';
-import "@/app/globals.css";
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/Switch"
+import { Separator } from "@/components/ui/separator"
+import { Toast } from "@/components/ui/toast"
+import { CalendarIcon, UserIcon, BriefcaseIcon, GraduationCapIcon, HeartIcon } from "lucide-react"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { createAccount } from "@/action/function"
 
+export default function EmployeeForm() {
+  const [employee, setEmployee] = useState({
+    cin: 0,
+    name: "",
+    gender: "",
+    date_of_birth: "",
+    place_of_birth: "",
+    phone_number: "",
+    email: "",
+    address: "",
+    emergency_contact: "",
+    job_title: "",
+    department_id: "",
+    manager_id: "",
+    hire_date: undefined,
+    salary: 0,
+    grade: "",
+    total_leave_balance: 0,
+    remaining_leave_balance: 0,
+    education: "",
+    marital_status: "",
+    dependents_count: 0,
+    disability_status: false,
+  })
 
-const departmentOptions = [
-  { value: 'rh', label: 'Ressources Humaines' },
-  { value: 'it', label: 'IT' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'operations', label: 'Opérations' },
-];
+  interface Option {
+    value: string;
+    label: string;
+  }
+  
+  const genderOptions: Option[] = [
+    { value: "Homme", label: "Homme" },
+    { value: "Femme", label: "Femme" },
+    { value: "Autre", label: "Autre" },
+  ];
+  
+  const maritalStatusOptions: Option[] = [
+    { value: "Célibataire", label: "Célibataire" },
+    { value: "Marié(e)", label: "Marié(e)" },
+    { value: "Divorcé(e)", label: "Divorcé(e)" },
+    { value: "Veuf/Veuve", label: "Veuf/Veuve" },
+  ];
 
-export default function Form() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    startDate: '',
-    department: '',
-    position: '',
-    salary: '',
-    address: '',
-    emergencyContact: '',
-    notes: '',
-  });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setEmployee(prev => ({ ...prev, [name]: value }))
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleSelectChange = (name: string) => (selectedOption: Option | null) => {
+    setEmployee(prev => ({ ...prev, [name]: selectedOption?.value || "" })) // Use selectedOption?.value
+  }
+  
 
-  const handleSelectChange = (selectedOption: { value: string; label: string } | null) => {
-    setFormData((prev) => ({
+  const handleSwitchChange = (name: string) => (checked: boolean) => {
+    setEmployee(prev => ({ ...prev, [name]: checked }))
+  }
+
+  const handleDateChange = (name: string) => (date: Date | undefined) => {
+    setEmployee(prev => ({
       ...prev,
-      department: selectedOption ? selectedOption.value : '',
+      [name]: date ? new Date(date) : undefined // Ensures the date is a Date object or undefined
     }));
   };
+  
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Ici, vous ajouteriez la logique pour envoyer les données à votre backend
-    console.log("Données de l'employé soumises:", formData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log(employee)
+    try {
+      // Assuming you're using a function to create an employee
+      await createAccount(employee);
+      // Show success notification or handle success
+    } catch (error) {
+      // Handle error (e.g., show error notification)
+    }
     Toast({
-      title: "Employé ajouté",
+      title: "Formulaire soumis",
       description: "Les informations de l'employé ont été enregistrées avec succès.",
-    });
-    // Réinitialiser le formulaire après la soumission
-    setFormData({
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      dateOfBirth: "",
-      startDate: "",
-      department: "",
-      position: "",
-      salary: "",
-      address: "",
-      emergencyContact: "",
-      notes: "",
-    });
-  };
+    })
+  }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Ajouter un nouvel employé</CardTitle>
-        <CardDescription>Remplissez les informations du nouvel employé. Tous les champs marqués d'un * sont obligatoires.</CardDescription>
+    <Card className="w-full max-w-5xl mx-auto">
+      <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <CardTitle className="text-3xl font-bold">Formulaire d'employé</CardTitle>
+        <CardDescription className="text-blue-100">Remplissez les informations de l'employé avec précision</CardDescription>
       </CardHeader>
-      <CardContent>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">Prénom *</Label>
-              <Input id="firstName" name="firstName" value={formData.firstName} onChange={handleChange} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Nom *</Label>
-              <Input id="lastName" name="lastName" value={formData.lastName} onChange={handleChange} required />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
-              <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Téléphone</Label>
-              <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="dateOfBirth">Date de naissance</Label>
-              <Input id="dateOfBirth" name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="startDate">Date de début *</Label>
-              <Input id="startDate" name="startDate" type="date" value={formData.startDate} onChange={handleChange} required />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="department">Département *</Label>
-              <Select
-                className="department"
-                id="department"
-                value={departmentOptions.find(option => option.value === formData.department) || null}
-                onChange={handleSelectChange}
-                options={departmentOptions}
-                placeholder="Sélectionnez un département"
-                styles={{
-                  control: (base, state) => ({
-                    ...base,
-                    backgroundColor: "#FFF",
-                    borderColor: state.isFocused ? "#333" : "#B1B2B9",
-                    boxShadow: state.isFocused ? "0 0 0 2px rgba(51, 51, 51, 0.2)" : "none",
-                    transition: "border-color 0.2s ease, box-shadow 0.2s ease",
-                    "&:hover": { borderColor: "#B1B2B9" },
-                  }),
-                  singleValue: (base) => ({
-                    ...base,
-                    color: "#333",
-                    fontWeight: "500",
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    backgroundColor: "#FFF",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    borderRadius: "4px",
-                    transition: "opacity 0.3s ease",
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    backgroundColor: state.isSelected ? "#f0f0f0" : "#FFF",
-                    color: state.isSelected ? "#333" : "#666",
-                    fontWeight: state.isSelected ? "500" : "400",
-                    "&:hover": {
-                      backgroundColor: "#B1B2B9",
-                      color: "#333",
-                    },
-                    padding: "10px 15px",
-                    transition: "background-color 0.2s ease, color 0.2s ease",
-                  }),
-                }}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="position">Poste *</Label>
-              <Input id="position" name="position" value={formData.position} onChange={handleChange} required />
+      <form onSubmit={handleSubmit}>
+        <CardContent className="space-y-6 pt-6">
+          <div className="space-y-4">
+            <h2 className="text-2xl font-semibold flex items-center text-blue-800">
+              <UserIcon className="mr-2" />
+              Informations personnelles
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="cin">CIN (Numéro d'identification nationale)</Label>
+                <Input id="cin" name="cin" value={employee.cin} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="name">Prénom</Label>
+                <Input id="name" name="name" value={employee.name} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="gender">Sexe</Label>
+                <Select
+                  options={maritalStatusOptions}
+                  onChange={handleSelectChange('marital_status')}
+                  placeholder="Sélectionnez l'état civil"
+                  value={maritalStatusOptions.find(option => option.value === employee.marital_status) || null} // Find the option by value
+                  isClearable
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="date_of_birth">Date de naissance</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={`w-full justify-start text-left font-normal ${!employee.date_of_birth && "text-muted-foreground"}`}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {employee.date_of_birth ? format(employee.date_of_birth, "P", { locale: fr }) : <span>Choisir une date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={employee.date_of_birth}
+                      onSelect={handleDateChange("date_of_birth")}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="place_of_birth">Lieu de naissance</Label>
+                <Input id="place_of_birth" name="place_of_birth" value={employee.place_of_birth} onChange={handleInputChange} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone_number">Numéro de téléphone</Label>
+                <Input id="phone_number" name="phone_number" value={employee.phone_number} onChange={handleInputChange} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Adresse email</Label>
+                <Input id="email" name="email" type="email" value={employee.email} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="address">Adresse résidentielle</Label>
+                <Textarea id="address" name="address" value={employee.address} onChange={handleInputChange} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="emergency_contact">Contact d'urgence</Label>
+                <Input id="emergency_contact" name="emergency_contact" value={employee.emergency_contact} onChange={handleInputChange} />
+              </div>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="salary">Salaire annuel</Label>
-            <Input id="salary" name="salary" type="number" value={formData.salary} onChange={handleChange} />
+
+          <Separator className="my-6" />
+
+          <div className="space-y-4">
+            <h2 className="text-2xl font-semibold flex items-center text-blue-800">
+              <BriefcaseIcon className="mr-2" />
+              Informations professionnelles
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="job_title">Titre du poste</Label>
+                <Input id="job_title" name="job_title" value={employee.job_title} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="department_id">ID du département</Label>
+                <Input id="department_id" name="department_id" value={employee.department_id} onChange={handleInputChange} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="manager_id">ID du responsable</Label>
+                <Input id="manager_id" name="manager_id" value={employee.manager_id} onChange={handleInputChange} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="hire_date">Date d'embauche</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={`w-full justify-start text-left font-normal ${!employee.hire_date && "text-muted-foreground"}`}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {employee.hire_date ? format(employee.hire_date, "P", { locale: fr }) : <span>Choisir une date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={employee.hire_date}
+                      onSelect={handleDateChange("hire_date")}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="salary">Salaire</Label>
+                <Input id="salary" name="salary" value={employee.salary} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="grade">Grade</Label>
+                <Input id="grade" name="grade" value={employee.grade} onChange={handleInputChange} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="total_leave_balance">Solde total de congés</Label>
+                <Input id="total_leave_balance" name="total_leave_balance" value={employee.total_leave_balance} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="remaining_leave_balance">Solde restant de congés</Label>
+                <Input id="remaining_leave_balance" name="remaining_leave_balance" value={employee.remaining_leave_balance} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="education">Éducation</Label>
+                <Input id="education" name="education" value={employee.education} onChange={handleInputChange} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="marital_status">État civil</Label>
+                <Select
+                  options={genderOptions}
+                  onChange={handleSelectChange('gender')}
+                  placeholder="Sélectionnez le sexe"
+                  value={genderOptions.find(option => option.value === employee.gender) || null} // Find the option by value
+                  isClearable
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dependents_count">Nombre de personnes à charge</Label>
+                <Input id="dependents_count" name="dependents_count" value={employee.dependents_count} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="disability_status">Statut de handicap</Label>
+                <Switch checked={employee.disability_status} onCheckedChange={handleSwitchChange('disability_status')} />
+              </div>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="address">Adresse</Label>
-            <Textarea id="address" name="address" value={formData.address} onChange={handleChange} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="emergencyContact">Contact d'urgence</Label>
-            <Input id="emergencyContact" name="emergencyContact" value={formData.emergencyContact} onChange={handleChange} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes supplémentaires</Label>
-            <Textarea id="notes" name="notes" value={formData.notes} onChange={handleChange} />
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Button type="submit" className="w-full"  onClick={handleSubmit}>
-          Ajouter l'employé
-        </Button >
-      </CardFooter>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit">Soumettre</Button>
+        </CardFooter>
+      </form>
     </Card>
-  );
+  )
 }
