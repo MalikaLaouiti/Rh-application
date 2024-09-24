@@ -1,5 +1,5 @@
 "use server";
-
+import { PrismaClient, Prisma } from '@prisma/client';
 import { db } from "@/action/database";
 import {
   Employee,
@@ -8,39 +8,80 @@ import {
   DemandeConge,
   Document
 } from "@prisma/client";
-// import { error } from "console";
-import { revalidatePath } from "next/cache";
-// import { Result } from "postcss";
 
-export async function createAccount(User: Employee) {
+export async function getAllUsers() {
   try {
-    const user = await db.employee.create({
-      data: User
-    });
-    if (!user) throw new Error("Error creating user: " + user);
-    // revalidatePath("/viewdata/stocks");
-    return { Response: { message: "User Created" } };
-  } 
-  catch (error: any) {
-    return { Error: error?.message };
+    const users = await db.employee.findMany();
+    return { users };
+  } catch (error: any) {
+    return { Error: error?.message || "An unexpected error occurred" };
   }
 }
-
-export async function updateUsers(User: Employee[]) {
-  const updatePromises = User.map((User) =>
-    db.employee.update({
-      where: { id: User.id },
-      data: {
-        ...User,
-      },
-    })
-  );
+export async function createAccount(userData: Prisma.EmployeeCreateInput) {
   try {
-    const User = await Promise.all(updatePromises);
-    if (!User) throw new Error("Error updating user");
-    // revalidatePath("/viewdata/stocks");
-    return { Response: { message: "User Updated" } };
+    const user = await db.employee.create({
+      data: userData,
+    });
+    if (!user) {
+      return { Error: "Error creating user" };
+    }
+    return { Response: { message: "User Created", user } };
   } catch (error: any) {
-    return { Error: error?.message };
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // Cas de l'erreur 'P2002' qui survient en cas de duplication de clé unique
+      if (error.code === 'P2002') {
+        return { Error: `Duplicate field: ${error.meta?.target}` };
+      }
+    }
+    
+    return { Error: error?.message || "An unexpected error occurred" };
+  }
+}
+export async function getUserById(userId: number) {
+  try {
+    const user = await db.employee.findUnique({
+      where: { id: userId },
+    });
+    
+    if (!user) {
+      return { Error: "User not found" };
+    }
+
+    return { user };
+  } catch (error: any) {
+    return { Error: error?.message || "An unexpected error occurred" };
+  }
+}
+export async function updateUser(userId: number, updatedData: Prisma.EmployeeUpdateInput) {
+  try {
+    const user = await db.employee.update({
+      where: { id: userId },
+      data: updatedData,
+    });
+
+    return { Response: { message: "User Updated", user } };
+  } catch (error: any) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        return { Error: "User not found" };
+      }
+    }
+    return { Error: error?.message || "An unexpected error occurred" };
+  }
+}
+export async function deleteUser(userId: number) {
+  try {
+    const user = await db.employee.delete({
+      where: { id: userId },
+    });
+
+    return { Response: { message: "User Deleted", user } };
+  } catch (error: any) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === 'P2025') {
+        return { Error: "User not found" };
+      }
+    }
+    return { Error: error?.message || "An unexpected error occurred" };
   }
 }

@@ -16,14 +16,3 @@ const EmpDashPage: React.FC<Props> = async ({ params }) => {
 
 export default EmpDashPage;
 
-// import { ArticleDetailsPage } from "@/components/component/pages/article-details-page";
-
-
-// const Page: React.FC<Props> = async ({ params }) => {
-//   const { articleDetails } = params;
-//   return (
-//     <ArticleDetailsPage articleNumber={articleDetails}/>
-//   )
-// }
-
-// export default Page;
