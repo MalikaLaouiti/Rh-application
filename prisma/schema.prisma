@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,13 +8,12 @@ datasource db {
 }
 
 model Employee {
-    id                       Int        @id @default(autoincrement())   // ID unique de l'employé
+    cin                      Int    @unique                            // Numéro d'identification nationale
     name                     String                                    // Prénom
-    gender                   String                                    // Sexe (ex. : 'Homme', 'Femme', etc.)
+    gender                   String   @default("Homme")                // Sexe (ex. : 'Homme', 'Femme', etc.)
     date_of_birth            DateTime                                  // Date de naissance
     place_of_birth           String?                                   // Lieu de naissance
-    identification_number    String?    @unique                        // Numéro d'identification nationale
-
+    
     phone_number             String?                                   // Numéro de téléphone
     email                    String     @unique                        // Adresse email
     address                  String?                                   // Adresse résidentielle
@@ -29,7 +22,7 @@ model Employee {
     job_title                String                                    // Titre du poste
     department               Department? @relation(fields: [department_id], references: [id]) // Clé étrangère vers la table des départements (Optionnel)
     department_id            Int?                                      // Clé étrangère du département
-    manager                  Employee?  @relation("ManagerEmployees", fields: [manager_id], references: [id]) // Clé étrangère vers le responsable (auto-référence de l'employé)
+    manager                  Employee?  @relation("ManagerEmployees", fields: [manager_id], references: [cin]) // Clé étrangère vers le responsable (auto-référence de l'employé)
     manager_id               Int?                                      // Clé étrangère du responsable
     hire_date                DateTime                                  // Date d'embauche
 
@@ -49,7 +42,7 @@ model Employee {
     conge_requests           Conge[]                                   // Congés demandés par l'employé
     
     // Relations with DemandeConge model
-    ApproveDemande           DemandeConge[]     @relation("ApprovalRelation")                              // demande de conge par l'employé
+    ApproveDemande           DemandeConge[] @relation("ApprovalRelation")                              // demande de conge par l'employé
     Employe                  DemandeConge[] @relation() 
 
     // Relations with Document model
@@ -66,7 +59,7 @@ model Conge {
   id               Int       @id @default(autoincrement())
   demandeCongeId   Int       @unique // Link back to the original request
   demandeConge     DemandeConge @relation(fields: [demandeCongeId], references: [id])
-  employee         Employee   @relation(fields: [employeeId], references: [id])
+  employee         Employee   @relation(fields: [employeeId], references: [cin])
   employeeId      Int
   startDate       DateTime   // Start date of the leave
   endDate         DateTime   // End date of the leave
@@ -80,7 +73,7 @@ model Conge {
 
 model DemandeConge {
   id              Int       @id @default(autoincrement())
-  employee        Employee  @relation(fields: [employeeId], references: [id])
+  employee        Employee  @relation(fields: [employeeId], references: [cin])
   employeeId      Int
   startDate       DateTime
   endDate         DateTime
@@ -88,7 +81,7 @@ model DemandeConge {
   status          String    @default("Pending") // e.g., "pending", "approved", "rejected"
   requestedAt     DateTime  @default(now())
   approvedAt      DateTime? // Optional date when approved
-  approvedBy      Employee?  @relation("ApprovalRelation", fields: [approvedById], references: [id])
+  approvedBy      Employee?  @relation("ApprovalRelation", fields: [approvedById], references: [cin])
   approvedById    Int?      // Optional foreign key to the approving manager
 
   // Optionally add fields for reasons or notes if needed
@@ -110,5 +103,5 @@ model Document {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
-  employee        Employee  @relation(fields: [employeeId], references: [id])
+  employee        Employee  @relation(fields: [employeeId], references: [cin])
 }
