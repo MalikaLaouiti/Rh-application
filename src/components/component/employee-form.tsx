@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Select from 'react-select';
 import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/Switch"
+import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
 import { Toast } from "@/components/ui/toast"
 import { CalendarIcon, UserIcon, BriefcaseIcon, GraduationCapIcon, HeartIcon } from "lucide-react"
@@ -18,10 +18,10 @@ import { createAccount } from "@/action/function"
 
 export default function EmployeeForm() {
   const [employee, setEmployee] = useState({
-    cin: 0,
+    cin: null as unknown as number,
     name: "",
     gender: "",
-    date_of_birth: "",
+    date_of_birth: undefined as unknown as Date ,
     place_of_birth: "",
     phone_number: "",
     email: "",
@@ -30,7 +30,7 @@ export default function EmployeeForm() {
     job_title: "",
     department_id: "",
     manager_id: "",
-    hire_date: undefined,
+    hire_date: undefined as unknown as Date ,
     salary: 0,
     grade: "",
     total_leave_balance: 0,
@@ -116,7 +116,7 @@ export default function EmployeeForm() {
                 <Input id="cin" name="cin" value={employee.cin} onChange={handleInputChange} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="name">Prénom</Label>
+                <Label htmlFor="name">Nom et Prénom</Label>
                 <Input id="name" name="name" value={employee.name} onChange={handleInputChange} required />
               </div>
               <div className="space-y-2">
@@ -133,13 +133,15 @@ export default function EmployeeForm() {
                 <Label htmlFor="date_of_birth">Date de naissance</Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={`w-full justify-start text-left font-normal ${!employee.date_of_birth && "text-muted-foreground"}`}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {employee.date_of_birth ? format(employee.date_of_birth, "P", { locale: fr }) : <span>Choisir une date</span>}
-                    </Button>
+                  <Button
+                    variant="outline"
+                    className={`w-full justify-start text-left font-normal ${!employee.date_of_birth ? "text-muted-foreground" : ""}`}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {employee.date_of_birth 
+                      ? format(employee.date_of_birth, "P", { locale: fr }) 
+                      : <span>Choisir une date</span>}
+                  </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
                     <Calendar
