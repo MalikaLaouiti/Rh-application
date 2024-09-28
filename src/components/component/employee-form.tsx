@@ -18,7 +18,7 @@ import { createAccount } from "@/action/function"
 
 export default function EmployeeForm() {
   const [employee, setEmployee] = useState({
-    cin: null as unknown as number,
+    cin: 0,
     name: "",
     gender: "",
     date_of_birth: undefined as unknown as Date ,
@@ -82,20 +82,29 @@ export default function EmployeeForm() {
   
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log(employee)
+    e.preventDefault();
+    
+    console.log(employee);
+    
     try {
       // Assuming you're using a function to create an employee
       await createAccount(employee);
-      // Show success notification or handle success
+      
+      // Show success notification
+      Toast({
+        title: "Formulaire soumis",
+        description: "Les informations de l'employé ont été enregistrées avec succès.",
+      });
+      console.log('User created:', employee);
     } catch (error) {
-      // Handle error (e.g., show error notification)
+      // Handle error and show error notification
+      Toast({
+        title: "Erreur lors de la soumission",
+        description: "Échec de l'enregistrement des informations de l'employé.",
+      });
+      console.log('User not created:', employee);
     }
-    Toast({
-      title: "Formulaire soumis",
-      description: "Les informations de l'employé ont été enregistrées avec succès.",
-    })
-  }
+  };
 
   return (
     <Card className="w-full max-w-5xl mx-auto">
@@ -122,6 +131,7 @@ export default function EmployeeForm() {
               <div className="space-y-2">
                 <Label htmlFor="gender">Sexe</Label>
                 <Select
+                  instanceId="my-select-instance"
                   options={maritalStatusOptions}
                   onChange={handleSelectChange('marital_status')}
                   placeholder="Sélectionnez l'état civil"
@@ -241,6 +251,7 @@ export default function EmployeeForm() {
               <div className="space-y-2">
                 <Label htmlFor="marital_status">État civil</Label>
                 <Select
+                  instanceId="select-instance"
                   options={genderOptions}
                   onChange={handleSelectChange('gender')}
                   placeholder="Sélectionnez le sexe"
