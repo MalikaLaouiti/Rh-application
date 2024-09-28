@@ -8,100 +8,80 @@ datasource db {
 }
 
 model Employee {
-    cin                      Int    @unique                            // Numéro d'identification nationale
-    name                     String                                    // Prénom
-    gender                   String   @default("Homme")                // Sexe (ex. : 'Homme', 'Femme', etc.)
-    date_of_birth            DateTime                                  // Date de naissance
-    place_of_birth           String?                                   // Lieu de naissance
-    
-    phone_number             String?                                   // Numéro de téléphone
-    email                    String     @unique                        // Adresse email
-    address                  String?                                   // Adresse résidentielle
-    emergency_contact        String?                                   // Contact d'urgence
-
-    job_title                String                                    // Titre du poste
-    department               Department? @relation(fields: [department_id], references: [id]) // Clé étrangère vers la table des départements (Optionnel)
-    department_id            Int?                                      // Clé étrangère du département
-    manager                  Employee?  @relation("ManagerEmployees", fields: [manager_id], references: [cin]) // Clé étrangère vers le responsable (auto-référence de l'employé)
-    manager_id               Int?                                      // Clé étrangère du responsable
-    hire_date                DateTime                                  // Date d'embauche
-
-    salary                   Float?                                    // Salaire (Optionnel)
-    grade                    String?                                   // Grade de l'emploi (Optionnel)
-    total_leave_balance      Int        @default(0)                    // Solde total de congés (en jours)
-    remaining_leave_balance  Int        @default(0)                    // Solde de congés restants (en jours)
-    // attendance_records       Json?                                    // Registres de présence (enregistrés sous forme de JSON)
-
-    education                String?                                   // Diplômes et qualifications (Optionnel)
-    marital_status           String     @default("Single")             // État civil
-    dependents_count         Int        @default(0)                    // Nombre de personnes à charge
-    disability_status        Boolean    @default(false)                // Statut de handicap
-    employees                Employee[] @relation("ManagerEmployees")  // Relation auto-référencée pour les subordonnés
-
-    // Relations with Conge model
-    conge_requests           Conge[]                                   // Congés demandés par l'employé
-    
-    // Relations with DemandeConge model
-    ApproveDemande           DemandeConge[] @relation("ApprovalRelation")                              // demande de conge par l'employé
-    Employe                  DemandeConge[] @relation() 
-
-    // Relations with Document model
-    Document_archif           Document[]                                   // demande de conge par l'employé
+  name                    String
+  gender                  String         @default("Homme")
+  date_of_birth           DateTime
+  place_of_birth          String?
+  phone_number            String?
+  email                   String         @unique
+  address                 String?
+  emergency_contact       String?
+  job_title               String
+  department_id           Int?
+  manager_id              Int?
+  hire_date               DateTime
+  salary                  Float?
+  grade                   String?
+  total_leave_balance     Int            @default(0)
+  remaining_leave_balance Int            @default(0)
+  education               String?
+  marital_status          String         @default("Single")
+  dependents_count        Int            @default(0)
+  disability_status       Boolean        @default(false)
+  cin                     Int            @unique
+  conge_requests          Conge[]
+  ApproveDemande          DemandeConge[] @relation("ApprovalRelation")
+  Employe                 DemandeConge[]
+  Document_archif         Document[]
+  department              Department?    @relation(fields: [department_id], references: [id])
+  manager                 Employee?      @relation("ManagerEmployees", fields: [manager_id], references: [cin])
+  employees               Employee[]     @relation("ManagerEmployees")
 }
 
 model Department {
-    id        Int       @id @default(autoincrement())   // ID unique du département
-    name      String                                   // Nom du département
-    employees Employee[]                               // Liste des employés dans ce département
+  id        Int        @id @default(autoincrement())
+  name      String
+  employees Employee[]
 }
 
 model Conge {
-  id               Int       @id @default(autoincrement())
-  demandeCongeId   Int       @unique // Link back to the original request
-  demandeConge     DemandeConge @relation(fields: [demandeCongeId], references: [id])
-  employee         Employee   @relation(fields: [employeeId], references: [cin])
-  employeeId      Int
-  startDate       DateTime   // Start date of the leave
-  endDate         DateTime   // End date of the leave
-  leaveType       String     // e.g., "annual", "sick", "maternity"
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-
-  // Optionally include fields for status or other details if needed
+  id             Int          @id @default(autoincrement())
+  demandeCongeId Int          @unique
+  employeeId     Int
+  startDate      DateTime
+  endDate        DateTime
+  leaveType      String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  demandeConge   DemandeConge @relation(fields: [demandeCongeId], references: [id])
+  employee       Employee     @relation(fields: [employeeId], references: [cin])
 }
-
 
 model DemandeConge {
-  id              Int       @id @default(autoincrement())
-  employee        Employee  @relation(fields: [employeeId], references: [cin])
-  employeeId      Int
-  startDate       DateTime
-  endDate         DateTime
-  leaveType       String    // e.g., "annual", "sick", "maternity"
-  status          String    @default("Pending") // e.g., "pending", "approved", "rejected"
-  requestedAt     DateTime  @default(now())
-  approvedAt      DateTime? // Optional date when approved
-  approvedBy      Employee?  @relation("ApprovalRelation", fields: [approvedById], references: [cin])
-  approvedById    Int?      // Optional foreign key to the approving manager
-
-  // Optionally add fields for reasons or notes if needed
-  reason          String?   // Reason for the leave
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  //Relation congee
-  iddemande                Conge[]   @relation()    // Congés approuvés par cet employé
+  id           Int       @id @default(autoincrement())
+  employeeId   Int
+  startDate    DateTime
+  endDate      DateTime
+  leaveType    String
+  status       String    @default("Pending")
+  requestedAt  DateTime  @default(now())
+  approvedAt   DateTime?
+  approvedById Int?
+  reason       String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  iddemande    Conge?
+  approvedBy   Employee? @relation("ApprovalRelation", fields: [approvedById], references: [cin])
+  employee     Employee  @relation(fields: [employeeId], references: [cin])
 }
 
-
 model Document {
-  id              Int       @id @default(autoincrement())
-  employeeId      Int
-  titre           String
-  url             String    // URL or path to the document
-  type            String    // e.g., "contract", "certificate"
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-
-  employee        Employee  @relation(fields: [employeeId], references: [cin])
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  titre      String
+  url        String
+  type       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  employee   Employee @relation(fields: [employeeId], references: [cin])
 }
