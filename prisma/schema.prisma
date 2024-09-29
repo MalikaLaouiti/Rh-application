@@ -8,7 +8,9 @@ datasource db {
 }
 
 model Employee {
+  cin                     Int            @unique
   name                    String
+  password                String
   gender                  String         @default("Homme")
   date_of_birth           DateTime
   place_of_birth          String?
@@ -28,7 +30,7 @@ model Employee {
   marital_status          String         @default("Single")
   dependents_count        Int            @default(0)
   disability_status       Boolean        @default(false)
-  cin                     Int            @unique
+  
   conge_requests          Conge[]
   ApproveDemande          DemandeConge[] @relation("ApprovalRelation")
   Employe                 DemandeConge[]
