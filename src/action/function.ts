@@ -1,6 +1,7 @@
 "use server";
+
 import { PrismaClient, Prisma } from '@prisma/client';
-import { db } from "@/action/database";
+import { db } from "@/server/database";
 
 // Employee functions (existing)
 export async function getAllUsers() {
