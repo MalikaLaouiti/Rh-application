@@ -10,7 +10,7 @@ import { Toast } from "@/components/ui/toast";
 import {  LockIcon, UserIcon } from "lucide-react";
 import Link from 'next/link';
 
-import { Checkbox } from "@radix-ui/react-checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Login() {
   return (
@@ -50,12 +50,12 @@ export default function Login() {
             Sign in
           </Button>
         </form>
-        <div className="text-center text-sm text-muted-foreground">
+        {/* <div className="text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
           <Link href="#" className="font-medium underline underline-offset-4 hover:text-primary" prefetch={false}>
             Sign up
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );
