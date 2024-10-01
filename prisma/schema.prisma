@@ -38,6 +38,14 @@ model Employee {
   department              Department?    @relation(fields: [department_id], references: [id])
   manager                 Employee?      @relation("ManagerEmployees", fields: [manager_id], references: [cin])
   employees               Employee[]     @relation("ManagerEmployees")
+  sessions  Session[]
+}
+
+model Session {
+  id        Int     @id @default(autoincrement())
+  userId    Int
+  user      User    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }
 
 model Department {
