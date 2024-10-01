@@ -2,8 +2,11 @@
 
 import { PrismaClient, Prisma } from '@prisma/client';
 import { db } from "@/server/database";
+import bcrypt from 'bcryptjs';
 
 // Employee functions (existing)
+
+  
 export async function getAllUsers() {
   try {
     const users = await db.employee.findMany();
