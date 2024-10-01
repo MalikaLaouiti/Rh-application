@@ -44,7 +44,7 @@ model Employee {
 model Session {
   id        Int     @id @default(autoincrement())
   userId    Int
-  user      User    @relation(fields: [userId], references: [id])
+  user      Employee    @relation(fields: [id], references: [cin])
   createdAt DateTime @default(now())
 }
 
