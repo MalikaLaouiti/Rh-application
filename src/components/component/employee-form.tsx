@@ -14,7 +14,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { createAccount } from "@/action/function"
+import { createEmployee } from "@/action/employee"
 
 export default function EmployeeForm() {
   const [employee, setEmployee] = useState({
@@ -81,30 +81,30 @@ export default function EmployeeForm() {
   };
   
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
     
-    console.log(employee);
+  //   console.log(employee);
     
-    try {
-      // Assuming you're using a function to create an employee
-      await createAccount(employee);
+  //   try {
+  //     // Assuming you're using a function to create an employee
+  //     await createEmployee(employee);
       
-      // Show success notification
-      Toast({
-        title: "Formulaire soumis",
-        description: "Les informations de l'employé ont été enregistrées avec succès.",
-      });
-      console.log('User created:', employee);
-    } catch (error) {
-      // Handle error and show error notification
-      Toast({
-        title: "Erreur lors de la soumission",
-        description: "Échec de l'enregistrement des informations de l'employé.",
-      });
-      console.log('User not created:', employee);
-    }
-  };
+  //     // Show success notification
+  //     Toast({
+  //       title: "Formulaire soumis",
+  //       description: "Les informations de l'employé ont été enregistrées avec succès.",
+  //     });
+  //     console.log('User created:', employee);
+  //   } catch (error) {
+  //     // Handle error and show error notification
+  //     Toast({
+  //       title: "Erreur lors de la soumission",
+  //       description: "Échec de l'enregistrement des informations de l'employé.",
+  //     });
+  //     console.log('User not created:', employee);
+  //   }
+  // };
 
   return (
     <Card className="w-full max-w-5xl mx-auto">
@@ -112,7 +112,7 @@ export default function EmployeeForm() {
         <CardTitle className="text-3xl font-bold">Formulaire d'employé</CardTitle>
         <CardDescription className="text-blue-100">Remplissez les informations de l'employé avec précision</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form action={createEmployee} >
         <CardContent className="space-y-6 pt-6">
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold flex items-center text-blue-800">

@@ -22,10 +22,10 @@ export default function Login() {
           <h1 className="text-3xl font-bold">Welcome back!</h1>
           <p className="text-muted-foreground">Enter your credentials to access your account.</p>
         </div>
-        <form className="space-y-4">
+        <form className="space-y-4" action={signUp}>
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input id="username" placeholder="Enter your username" />
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" placeholder="Enter your Email" />
           </div>
          
           <div className="space-y-2">

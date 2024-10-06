@@ -8,43 +8,45 @@ datasource db {
 }
 
 model Employee {
-  cin                     Int            @unique
-  name                    String
+  cin                     Int       @unique
+  name                    String?
   password                String
-  gender                  String         @default("Homme")
-  date_of_birth           DateTime
+  gender                  String?   @default("Homme")
+  date_of_birth           DateTime?
   place_of_birth          String?
   phone_number            String?
-  email                   String         @unique
+  email                   String    @unique
   address                 String?
   emergency_contact       String?
-  job_title               String
+  job_title               String?
   department_id           Int?
   manager_id              Int?
-  hire_date               DateTime
+  hire_date               DateTime?
   salary                  Float?
   grade                   String?
-  total_leave_balance     Int            @default(0)
-  remaining_leave_balance Int            @default(0)
+  total_leave_balance     Int?      @default(0)
+  remaining_leave_balance Int?      @default(0)
   education               String?
-  marital_status          String         @default("Single")
-  dependents_count        Int            @default(0)
-  disability_status       Boolean        @default(false)
-  
-  conge_requests          Conge[]
-  ApproveDemande          DemandeConge[] @relation("ApprovalRelation")
-  Employe                 DemandeConge[]
-  Document_archif         Document[]
-  department              Department?    @relation(fields: [department_id], references: [id])
-  manager                 Employee?      @relation("ManagerEmployees", fields: [manager_id], references: [cin])
-  employees               Employee[]     @relation("ManagerEmployees")
-  sessions  Session[]
+  marital_status          String?   @default("Single")
+  dependents_count        Int?      @default(0)
+  disability_status       Boolean?  @default(false)
+
+  conge_requests  Conge[]
+  ApproveDemande  DemandeConge[] @relation("ApprovalRelation")
+  Employe         DemandeConge[]
+  Document_archif Document[]
+  department      Department?    @relation(fields: [department_id], references: [id])
+  manager         Employee?      @relation("ManagerEmployees", fields: [manager_id], references: [cin])
+  employees       Employee[]     @relation("ManagerEmployees")
+  sessions        Session[]
 }
 
 model Session {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    Int
-  user      Employee    @relation(fields: [id], references: [cin])
+  user      Employee @relation(fields: [userId], references: [cin])
+  token     String   @unique
+  expiresAt DateTime
   createdAt DateTime @default(now())
 }
 
