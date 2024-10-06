@@ -7,15 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Employee {
-  cin                     Int       @unique
+model User {
+  id                      String    @id @default(cuid())
   name                    String?
+  email                   String    @unique
+  emailVerified           DateTime?
+  image                   String?
+  cin                     Int  ?     @unique
   password                String
   gender                  String?   @default("Homme")
   date_of_birth           DateTime?
   place_of_birth          String?
   phone_number            String?
-  email                   String    @unique
   address                 String?
   emergency_contact       String?
   job_title               String?
@@ -36,24 +39,59 @@ model Employee {
   Employe         DemandeConge[]
   Document_archif Document[]
   department      Department?    @relation(fields: [department_id], references: [id])
-  manager         Employee?      @relation("ManagerEmployees", fields: [manager_id], references: [cin])
-  employees       Employee[]     @relation("ManagerEmployees")
-  sessions        Session[]
+  manager         User?          @relation("ManagerEmployees", fields: [manager_id], references: [cin])
+  employees       User[]         @relation("ManagerEmployees")
+
+  accounts Account[]
+  sessions Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      Employee @relation(fields: [userId], references: [cin])
-  token     String   @unique
-  expiresAt DateTime
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
 }
 
 model Department {
-  id        Int        @id @default(autoincrement())
+  id        Int    @id @default(autoincrement())
   name      String
-  employees Employee[]
+  employees User[]
 }
 
 model Conge {
@@ -66,7 +104,9 @@ model Conge {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   demandeConge   DemandeConge @relation(fields: [demandeCongeId], references: [id])
-  employee       Employee     @relation(fields: [employeeId], references: [cin])
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
 }
 
 model DemandeConge {
@@ -83,17 +123,19 @@ model DemandeConge {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   iddemande    Conge?
-  approvedBy   Employee? @relation("ApprovalRelation", fields: [approvedById], references: [cin])
-  employee     Employee  @relation(fields: [employeeId], references: [cin])
+  approvedBy   User?     @relation("ApprovalRelation", fields: [approvedById], references: [cin])
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
 }
 
 model Document {
-  id         Int      @id @default(autoincrement())
-  employeeId Int
-  titre      String
-  url        String
-  type       String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  employee   Employee @relation(fields: [employeeId], references: [cin])
+  id        Int      @id @default(autoincrement())
+  titre     String
+  url       String
+  type      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
 }

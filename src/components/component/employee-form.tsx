@@ -14,7 +14,8 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { createEmployee } from "@/action/employee"
+import { create } from "@/action/employee"
+
 
 export default function EmployeeForm() {
   const [employee, setEmployee] = useState({
@@ -112,7 +113,7 @@ export default function EmployeeForm() {
         <CardTitle className="text-3xl font-bold">Formulaire d'employé</CardTitle>
         <CardDescription className="text-blue-100">Remplissez les informations de l'employé avec précision</CardDescription>
       </CardHeader>
-      <form action={createEmployee} >
+      <form action={create} >
         <CardContent className="space-y-6 pt-6">
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold flex items-center text-blue-800">
