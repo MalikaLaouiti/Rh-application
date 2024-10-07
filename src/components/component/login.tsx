@@ -1,20 +1,17 @@
+"use client"
 
-// import { useState } from "react";
 import { Button } from "@/components/ui/button";
-// import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-// import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-button";
-// import { Toast } from "@/components/ui/toast";
-// import { LockIcon, UserIcon } from "lucide-react";
 import Link from 'next/link';
-// import { useFormState } from 'react-dom'
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "@/server/auth"
 
 
 export default function Login() {
-
+    const credentialsAction = (formData: FormData) => {
+      signIn("credentials", formData)
+    }
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="mx-auto w-full max-w-md space-y-6 rounded-lg bg-card p-6 shadow-lg">
@@ -22,11 +19,7 @@ export default function Login() {
           <h1 className="text-3xl font-bold">Welcome back!</h1>
           <p className="text-muted-foreground">Enter your credentials to access your account.</p>
         </div>
-        <form className="space-y-4"
-          action={async (formData) => {
-            "use server"
-            await signIn("credentials", formData)
-          }}>
+        <form className="space-y-4" action={credentialsAction}>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" placeholder="Enter your Email" />
@@ -48,9 +41,9 @@ export default function Login() {
             <Input id="password" type="password" placeholder="Enter your password" />
           </div>
           <div className="flex items-center space-x-2">
-            <Checkbox id="admin-employee" />
+            <Checkbox id="Admin" />
             <Label htmlFor="admin">Admin</Label>
-            <Checkbox id="employee" />
+            <Checkbox id="Employee" />
             <Label htmlFor="employee">Employee</Label>
           </div>
           <Button type="submit" className="w-full">

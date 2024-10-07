@@ -5,9 +5,10 @@ import { Prisma } from '@prisma/client';
 import { hash } from "bcrypt-ts";
 
 
-export async function create(data: FormData) {
+export async function createUser(data: FormData) {
   const email = data.get('email') ;
   const password = data.get('password') ;
+  const grade = data.get('grade');
 
   // Hash the password using bcrypt
   const passwordHash = await hash(password?.toString() ?? '', 10);
@@ -16,7 +17,8 @@ export async function create(data: FormData) {
   const user = await prisma.user.create({
     data: {
       email: email as string,
-      password: passwordHash
+      password: password as string, 
+      grade: grade as string
     },
   });
   if (user){
@@ -26,14 +28,6 @@ export async function create(data: FormData) {
       console.log("Failed to create user");
   }
   return user;
-}
-
-// CREATE: Add a new employee
-export async function createEmployee(data: Prisma.UserCreateInput) {
-  const employee = await prisma.user.create({
-    data,
-  });
-  return employee;
 }
 
 // READ: Get all employees

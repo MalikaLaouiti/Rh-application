@@ -3,6 +3,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./prisma"
 import Credentials from "next-auth/providers/credentials"
 import { compare } from "bcrypt-ts"
+import { redirect } from "next/navigation"
+
 // Your own logic for dealing with plaintext password strings; be careful!
 
  
@@ -12,7 +14,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Credentials({
       credentials: {
         email: {},
-        password: {},
+        password: {}
       },
       authorize: async (credentials) => {
         let user = null
@@ -23,12 +25,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         })
  
         if (!user) {
+          redirect('/Admin/Formulaire');
           // No user found, so this is their first attempt to login
-          // meaning this is also the place you could do registration
-          throw new Error("User not found.")
+          // meaning this is also the place you could do registration 
         }
         if (await compare(credentials.password as string, user.password as string)){
-          return user
+          // if (user.grade ==='Admin'){
+          //   redirect('/Admin/Administration');
+          // }
+          // else {
+          //   redirect('/User/Account');
+          // } 
+          return user;
         }
         else {
           throw new Error("Invalid password.")

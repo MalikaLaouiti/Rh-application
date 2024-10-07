@@ -14,12 +14,13 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { create } from "@/action/employee"
+import { createUser } from "@/action/employee"
 
 
 export default function EmployeeForm() {
   const [employee, setEmployee] = useState({
     cin: 0,
+    password: "",
     name: "",
     gender: "",
     date_of_birth: undefined as unknown as Date ,
@@ -81,39 +82,13 @@ export default function EmployeeForm() {
     }));
   };
   
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-    
-  //   console.log(employee);
-    
-  //   try {
-  //     // Assuming you're using a function to create an employee
-  //     await createEmployee(employee);
-      
-  //     // Show success notification
-  //     Toast({
-  //       title: "Formulaire soumis",
-  //       description: "Les informations de l'employé ont été enregistrées avec succès.",
-  //     });
-  //     console.log('User created:', employee);
-  //   } catch (error) {
-  //     // Handle error and show error notification
-  //     Toast({
-  //       title: "Erreur lors de la soumission",
-  //       description: "Échec de l'enregistrement des informations de l'employé.",
-  //     });
-  //     console.log('User not created:', employee);
-  //   }
-  // };
-
   return (
     <Card className="w-full max-w-5xl mx-auto">
       <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <CardTitle className="text-3xl font-bold">Formulaire d'employé</CardTitle>
         <CardDescription className="text-blue-100">Remplissez les informations de l'employé avec précision</CardDescription>
       </CardHeader>
-      <form action={create} >
+      <form action={createUser} >
         <CardContent className="space-y-6 pt-6">
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold flex items-center text-blue-800">
@@ -124,6 +99,10 @@ export default function EmployeeForm() {
               <div className="space-y-2">
                 <Label htmlFor="cin">CIN (Numéro d'identification nationale)</Label>
                 <Input id="cin" name="cin" value={employee.cin} onChange={handleInputChange} required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">password</Label>
+                <Input id="password" name="password" value={employee.password} onChange={handleInputChange} required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Nom et Prénom</Label>

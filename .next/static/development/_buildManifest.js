@@ -1,1 +1,3 @@
-self.__BUILD_MANIFEST = {__rewrites:{afterFiles:[],beforeFiles:[],fallback:[]},"/_error":["static\u002Fchunks\u002Fpages\u002F_error.js"],sortedPages:["\u002F_app","\u002F_error"]};self.__BUILD_MANIFEST_CB && self.__BUILD_MANIFEST_CB()
+version https://git-lfs.github.com/spec/v1
+oid sha256:af54024673e5e364631a097c9e5f853795c771f4bac822fe6767691727ef2884
+size 235

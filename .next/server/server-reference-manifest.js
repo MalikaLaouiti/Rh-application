@@ -1,1 +1,3 @@
-self.__RSC_SERVER_MANIFEST="{\n  \"node\": {},\n  \"edge\": {},\n  \"encryptionKey\": \"Er7LC/m5S1nHR7PJ4jN5lMcZOL6Sx0/rSFf0EcC0x8s=\"\n}"
+version https://git-lfs.github.com/spec/v1
+oid sha256:f6e8306be45313259f9597f7452f2ded66657f96eebca645e30e5709c7c86466
+size 4749
