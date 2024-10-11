@@ -33,27 +33,10 @@ export default function Home() {
                 <h1 className="lg:leading-tighter text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-[3.4rem] 2xl:text-[3.75rem]">
                   Optimisez la gestion de vos ressources humaines
                 </h1>
-                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl mt-10">
                   Notre application de gestion des ressources humaines vous offre une solution complète pour simplifier
                   vos processus RH, de l'intégration des employés au suivi des performances.
                 </p>
-                <div className="mt-6 space-x-4">
-                  
-                  <Link
-                    href="/Login"
-                    className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-                    prefetch={false}
-                  >
-                    S'inscrire
-                  </Link>
-                  {/* <Link
-                    href="#"
-                    className="inline-flex h-9 items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-                    prefetch={false}
-                  >
-                    En savoir plus
-                  </Link> */}
-                </div>
               </div>
               <div className="flex flex-col items-center justify-center">
                 <img
@@ -67,13 +50,13 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container space-y-12 px-4 md:px-6">
+        <section className="w-full py-12 md:py-24 lg:py-32 ">
+          <div className="container space-y-12 px-4 md:px-6 ">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">Fonctionnalités clés</div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Optimisez vos processus RH</h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed mt-10">
                   Notre application de gestion des ressources humaines vous offre une gamme de fonctionnalités pour vous
                   aider à gérer votre personnel de manière plus efficace, de l\'intégration des employés au suivi des
                   performances.
@@ -123,41 +106,15 @@ export default function Home() {
             </div>
             <div className="flex justify-center flex-col sm:flex-row items-start gap-4">
               <Link
-                href="#"
-                className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+                href="/Login"
+                className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
                 prefetch={false}
               >
                 S'inscrire
               </Link>
-              
             </div>
           </div>
         </section>
-        {/* <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-          <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
-            <div className="space-y-3">
-              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                Optimisez facilement vos processus RH
-              </h2>
-              <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Notre application de gestion des ressources humaines est conçue pour vous aider à gérer votre personnel
-                de manière plus efficace, afin que vous puissiez vous concentrer sur l\'essentiel : vos collaborateurs.
-              </p>
-            </div>
-            <div className="mx-auto w-full max-w-sm space-y-2">
-              <form className="flex gap-2">
-                <Input type="email" placeholder="Entrez votre email" className="max-w-lg flex-1" />
-                <Button type="submit">S\'inscrire</Button>
-              </form>
-              <p className="text-xs text-muted-foreground">
-                Inscrivez-vous pour commencer à utiliser notre application de gestion des ressources humaines.{" "}
-                <Link href="#" className="underline underline-offset-2" prefetch={false}>
-                  Conditions générales
-                </Link>
-              </p>
-            </div>
-          </div>
-        </section> */}
       </main>
       <footer className="bg-muted p-6 md:py-12 w-full ml-auto mr-">
         <div className="container max-w-7xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-8 text-sm">

@@ -1,4 +1,3 @@
-"use client"
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,9 +8,6 @@ import { signIn } from "@/server/auth"
 
 
 export default function Login() {
-    const credentialsAction = (formData: FormData) => {
-      signIn("credentials", formData)
-    }
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="mx-auto w-full max-w-md space-y-6 rounded-lg bg-card p-6 shadow-lg">
@@ -19,7 +15,10 @@ export default function Login() {
           <h1 className="text-3xl font-bold">Welcome back!</h1>
           <p className="text-muted-foreground">Enter your credentials to access your account.</p>
         </div>
-        <form className="space-y-4" action={credentialsAction}>
+        <form className="space-y-4" action={async (formData) => {
+        "use server"
+        await signIn("credentials", formData)
+      }}>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" placeholder="Enter your Email" />

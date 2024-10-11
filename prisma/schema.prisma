@@ -6,14 +6,13 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model User {
-  id                      String    @id @default(cuid())
+  id                      Int    @id @default(autoincrement()) 
   name                    String?
   email                   String    @unique
   emailVerified           DateTime?
   image                   String?
-  cin                     Int  ?     @unique
+  cin                     Int?      @unique
   password                String
   gender                  String?   @default("Homme")
   date_of_birth           DateTime?
@@ -39,7 +38,7 @@ model User {
   Employe         DemandeConge[]
   Document_archif Document[]
   department      Department?    @relation(fields: [department_id], references: [id])
-  manager         User?          @relation("ManagerEmployees", fields: [manager_id], references: [cin])
+  manager         User?          @relation("ManagerEmployees", fields: [manager_id], references: [id]) // Fixed relation to use 'id'
   employees       User[]         @relation("ManagerEmployees")
 
   accounts Account[]
@@ -50,7 +49,7 @@ model User {
 }
 
 model Account {
-  userId            String
+  userId            Int
   type              String
   provider          String
   providerAccountId String
@@ -72,7 +71,7 @@ model Account {
 
 model Session {
   sessionToken String   @unique
-  userId       String
+  userId       Int
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -96,17 +95,16 @@ model Department {
 
 model Conge {
   id             Int          @id @default(autoincrement())
-  demandeCongeId Int          @unique
   employeeId     Int
   startDate      DateTime
   endDate        DateTime
   leaveType      String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
-  demandeConge   DemandeConge @relation(fields: [demandeCongeId], references: [id])
+  demandeConge   DemandeConge @relation(fields: [id], references: [id])
 
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String?
+  userId Int
+  User   User?   @relation(fields: [userId], references: [id]) // Fixed to reference 'id'
 }
 
 model DemandeConge {
@@ -117,16 +115,16 @@ model DemandeConge {
   leaveType    String
   status       String    @default("Pending")
   requestedAt  DateTime  @default(now())
-  approvedAt   DateTime?
-  approvedById Int?
-  reason       String?
+  approvedAt   DateTime
+  approvedById Int
+  reason       String
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   iddemande    Conge?
-  approvedBy   User?     @relation("ApprovalRelation", fields: [approvedById], references: [cin])
+  approvedBy   User?     @relation("ApprovalRelation", fields: [approvedById], references: [id]) // Fixed to reference 'id'
 
-  User   User?   @relation(fields: [userId], references: [id])
-  userId String?
+  userId Int
+  User   User?   @relation(fields: [userId], references: [id]) // Fixed to reference 'id'
 }
 
 model Document {
@@ -136,6 +134,6 @@ model Document {
   type      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User?    @relation(fields: [userId], references: [id])
-  userId    String?
+  userId    Int
+  User      User?    @relation(fields: [userId], references: [id]) // Fixed to reference 'id'
 }
