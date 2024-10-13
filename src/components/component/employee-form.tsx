@@ -19,7 +19,7 @@ import { createUser } from "@/action/employee"
 
 export default function EmployeeForm() {
   const [employee, setEmployee] = useState({
-    cin: 0,
+    cin: "",
     password: "",
     name: "",
     gender: "",
@@ -51,7 +51,6 @@ export default function EmployeeForm() {
   const genderOptions: Option[] = [
     { value: "Homme", label: "Homme" },
     { value: "Femme", label: "Femme" },
-    { value: "Autre", label: "Autre" },
   ];
   
   const maritalStatusOptions: Option[] = [
@@ -60,6 +59,11 @@ export default function EmployeeForm() {
     { value: "Divorcé(e)", label: "Divorcé(e)" },
     { value: "Veuf/Veuve", label: "Veuf/Veuve" },
   ];
+  
+  const gradeOption: Option[]=[
+    { value: "Admin", label: "Admin" },
+    { value: "Employee", label: "Employee" },
+  ]
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -70,7 +74,6 @@ export default function EmployeeForm() {
     setEmployee(prev => ({ ...prev, [name]: selectedOption?.value || "" })) // Use selectedOption?.value
   }
   
-
   const handleSwitchChange = (name: string) => (checked: boolean) => {
     setEmployee(prev => ({ ...prev, [name]: checked }))
   }
@@ -81,6 +84,8 @@ export default function EmployeeForm() {
       [name]: date ? new Date(date) : undefined // Ensures the date is a Date object or undefined
     }));
   };
+
+  
   
   return (
     <Card className="w-full max-w-5xl mx-auto">
@@ -167,7 +172,6 @@ export default function EmployeeForm() {
           </div>
 
           <Separator className="my-6" />
-
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold flex items-center text-blue-800">
               <BriefcaseIcon className="mr-2" />
@@ -214,7 +218,14 @@ export default function EmployeeForm() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="grade">Grade</Label>
-                <Input id="grade" name="grade" value={employee.grade} onChange={handleInputChange} />
+                <Select
+                  instanceId="my-selct-instance"
+                  options={gradeOption}
+                  onChange={handleSelectChange('grade')}
+                  placeholder="Sélectionnez votre grade"
+                  value={gradeOption.find(option => option.value === employee.grade)|| null} // Find the option by value
+                  isClearable
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="total_leave_balance">Solde total de congés</Label>

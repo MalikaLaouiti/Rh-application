@@ -14,7 +14,7 @@ import { Toast } from "@/components/ui/toast"
 import jsPDF from 'jspdf'
 import 'jspdf-autotable';
 import { getAllEmployees } from "@/action/employee";
-import { Prisma } from "@prisma/client";
+
 
 const UserOptions = [
   { value: 'id', label: 'ID' },
@@ -25,11 +25,11 @@ const UserOptions = [
 // User type based on Prisma schema
 interface User {
   id: number ;
-  cin: number ; // Allow `cin` to be either `number` or `null`
-  name: string ; // Allow `name` to be either `string` or `null`
-  email: string; // Email might be required, so no need for `null`
-  grade: string ; // Allow `grade` to be `null`
-  department_id:number // Allow `department` to be `null`
+  cin: number ; 
+  name: string ; 
+  email: string; 
+  grade: string ; 
+  department_id:number 
 }
 
 interface ListProps {
@@ -52,8 +52,9 @@ export default function List({ employees }: ListProps) {
     const doc = new jsPDF();
     doc.text("Liste des Employés et Administrateurs", 14, 15);
     (doc as any).autoTable({
-      head: [['Nom', 'Email', 'Rôle', 'Département', 'Date d\'entrée']],
+      head: [['CIN','Nom', 'Email', 'Rôle', 'Département']],
       body: filteredUsers.map(user => [
+        user.cin,
         user.name,
         user.email,
         user.grade,
@@ -107,6 +108,7 @@ export default function List({ employees }: ListProps) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>CIN</TableHead>
               <TableHead>Nom</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Rôle</TableHead>
@@ -117,6 +119,7 @@ export default function List({ employees }: ListProps) {
           <TableBody>
             {filteredUsers.map((user) => (
               <TableRow key={user.id}>
+                <TableCell>{user.cin}</TableCell>
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
@@ -147,6 +150,10 @@ export default function List({ employees }: ListProps) {
                             </Avatar>
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="CIN" className="text-right">CIN</Label>
+                            <Input id="CIN" value={selectedUser.cin} className="col-span-3" readOnly />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="name" className="text-right">Nom</Label>
                             <Input id="name" value={selectedUser.name} className="col-span-3" readOnly />
                           </div>
@@ -162,10 +169,6 @@ export default function List({ employees }: ListProps) {
                             <Label htmlFor="department" className="text-right">Département</Label>
                             <Input id="department" value={selectedUser.department_id} className="col-span-3" readOnly />
                           </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="Departement" className="text-right">Date d'entrée</Label>
-                            <Input id="Departement" value={selectedUser.department_id} className="col-span-3" readOnly />
-                          </div>
                         </div>
                       )}
                     </DialogContent>
@@ -177,5 +180,6 @@ export default function List({ employees }: ListProps) {
         </Table>
       </CardContent>
     </Card>
+    
   );
 }

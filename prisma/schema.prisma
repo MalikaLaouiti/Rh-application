@@ -12,7 +12,7 @@ model User {
   email                   String    @unique
   emailVerified           DateTime?
   image                   String?
-  cin                     Int?      @unique
+  cin                     String?      @unique
   password                String
   gender                  String?   @default("Homme")
   date_of_birth           DateTime?
