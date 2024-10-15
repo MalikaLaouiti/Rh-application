@@ -7,6 +7,7 @@ import { hash } from "bcrypt-ts";
 
 
 export async function createUser(data: FormData) {
+  console.log(data)
   const cin = data.get('cin');
   const password = data.get('password') ;
   const name = data.get('name');
