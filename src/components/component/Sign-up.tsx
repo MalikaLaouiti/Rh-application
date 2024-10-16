@@ -4,8 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createUser } from "@/action/employee";
 import { useState } from "react";
-import { RadioGroup, Radio } from "@nextui-org/radio";
-import { cn } from "@nextui-org/theme";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -18,7 +16,7 @@ export default function Login() {
     grade: ''
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -38,10 +36,9 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10">
+    <div className="max-w-md mx-auto mt-10 mb-10">
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Inscription RH Application</h2>
-
+        <h2 className="text-2xl font-bold text-center mb-6">Inscription à RH Application</h2>
         <div className="space-y-2">
           <Label htmlFor="cin">CIN</Label>
           <Input id="cin" name="cin" required value={formData.cin} onChange={handleInputChange} />
@@ -59,7 +56,17 @@ export default function Login() {
 
         <div className="space-y-2">
           <Label htmlFor="gender">Genre</Label>
-          <Input id="gender" name="gender" required value={formData.gender} onChange={handleInputChange} />
+          <select
+            id="gender"
+            name="gender"
+            required
+            value={formData.gender}
+            onChange={handleInputChange}
+            className="block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="Homme">Homme</option>
+            <option value="Femme">Femme</option>
+          </select>
         </div>
 
         <div className="space-y-2">
@@ -73,29 +80,18 @@ export default function Login() {
         </div>
 
         <div className="space-y-2">
-          <RadioGroup
-            label="Selectionez votre role"
+          <Label htmlFor="grade">Sélectionnez votre rôle</Label>
+          <select
+            id="grade"
+            name="grade"
+            required
             value={formData.grade}
-            onValueChange={(value) => setFormData((prev) => ({ ...prev, grade: value }))}
-
+            onChange={handleInputChange}
+            className="block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
           >
-            <Radio classNames={{
-              base: "flex items-center cursor-pointer bg-white hover:bg-gray-50 rounded-md transition duration-150 ease-in-out max-w-[300px] p-3 border border-gray-300 hover:border-gray-500 data-[selected=true]:border-gray-500 data-[selected=true]:bg-gray-50 text-sm font-medium text-gray-700",
-              wrapper: "flex items-center",
-              control: "w-5 h-5 border-1 border-gray-200 rounded-md flex items-center justify-center mr-3 data-[selected=true]:border-gray-500",
-              labelWrapper: "flex items-center",
-              label: "text-gray-800 data-[selected=true]:text-gray-600",
-            }}
-              value="Admin">Admin</Radio>
-            <Radio classNames={{
-              base: "flex items-center cursor-pointer bg-white hover:bg-gray-50 rounded-md transition duration-150 ease-in-out max-w-[300px] p-3 border border-gray-300 hover:border-gray-500 data-[selected=true]:border-gray-500 data-[selected=true]:bg-gray-50 text-sm font-medium text-gray-700",
-              wrapper: "flex items-center",
-              control: "w-5 h-5 border-1 border-gray-200 rounded-md flex items-center justify-center mr-3 data-[selected=true]:border-gray-500",
-              labelWrapper: "flex items-center",
-              label: "text-gray-800 data-[selected=true]:text-gray-600",
-            }} 
-            value="Employee">Employee</Radio>
-          </RadioGroup>
+            <option value="Admin">Admin</option>
+            <option value="Employee">Employee</option>
+          </select>
         </div>
 
         <Button type="submit" className="w-full">S'inscrire</Button>
