@@ -4,6 +4,7 @@ import { Toast } from '@/components/ui/toast';
 import { prisma } from '@/server/prisma';
 import { Prisma } from '@prisma/client';
 import { hash } from "bcrypt-ts";
+import { User } from 'next-auth';
 
 
 export async function createUser(data: FormData) {
@@ -65,7 +66,8 @@ export async function getEmployeeByCriteria(criteria: { cin?: string; department
 
 
 // UPDATE: Update an employee's details
-export async function updateEmployee(cin: string, data:Prisma.UserCreateInput ) {
+export async function updateEmployee(cin: string, data: Prisma.UserUpdateInput) {
+  console.log(data);
   const employee = await prisma.user.update({
     where: { cin },
     data,
