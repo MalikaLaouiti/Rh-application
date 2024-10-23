@@ -1,8 +1,7 @@
 "use client"
-import React, { useState } from 'react'
+import React from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Calendar } from "@/components/ui/calendar"
@@ -11,7 +10,18 @@ import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { updateEmployee } from '@/action/employee'
-import { Prisma } from '@prisma/client'
+import { toast, ToastContainer } from 'react-toastify';
+import { useForm } from 'react-hook-form';
+import 'react-toastify/dist/ReactToastify.css';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+
 
 interface UserData {
   cin: string;
@@ -38,254 +48,422 @@ interface UserData {
 }
 
 export default function EditUserForm() {
-  const [userData, setUserData] = useState<UserData>({
-    cin: "",
-    name: "",
-    gender: "",
-    date_of_birth: new Date(1990, 0, 1),
-    place_of_birth: "",
-    phone_number: "",
-    email: "",
-    address: "",
-    emergency_contact: "",
-    job_title: "",
-    department_id: 0,
-    manager_id: "",
-    hire_date: new Date(2000, 0, 1),
-    salary: 0,
-    grade: "",
-    total_leave_balance: 0,
-    remaining_leave_balance: 0,
-    education: "",
-    marital_status: "",
-    dependents_count: 0,
-    disability_status: false,
+  const form = useForm<UserData>({
+    defaultValues: {
+      cin: "",
+      name: "",
+      gender: "",
+      date_of_birth: new Date(1990, 0, 1),
+      place_of_birth: "",
+      phone_number: "",
+      email: "",
+      address: "",
+      emergency_contact: "",
+      job_title: "",
+      // department_id: 0 as number,
+      // manager_id: "",
+      hire_date: new Date(2000, 0, 1),
+      salary: 0,
+      grade: "",
+      total_leave_balance: 0,
+      remaining_leave_balance: 0,
+      education: "",
+      marital_status: "",
+      dependents_count: 0,
+      disability_status: false,
+    },
+    mode: 'onBlur',
   })
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type } = e.target
-    setUserData(prev => ({
-      ...prev,
-      [name]: type === 'number' ? Number(value) : value
-    }))
-  }
+  const handleDateChange = (name: keyof UserData) => (date: Date) => {
+    form.setValue(name, date);
+  };
 
-  const handleSelectChange = (name: string) => (value: string) => {
-    setUserData(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleDateChange = (name: string) => (date: Date | undefined) => {
-    if (date) {
-      setUserData(prev => ({ ...prev, [name]: date }))
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-  
+  const onSubmit = async (data: UserData) => {
     try {
-      const dataToUpdate: Prisma.UserUpdateInput = {
-        name: userData.name,
-        email: userData.email,
-        gender: userData.gender,
-        date_of_birth: userData.date_of_birth,
-        place_of_birth: userData.place_of_birth,
-        phone_number: userData.phone_number,
-        address: userData.address,
-        emergency_contact: userData.emergency_contact,
-        job_title: userData.job_title,
-        // department: {
-        //   connect: {
-        //      id: Number(userData.department_id) , 
-        //   },
-        // },
-        // manager: {
-        //   connect: {
-        //      id: userData.manager_id, 
-        //   },
-        // },
-        hire_date: userData.hire_date,
-        salary: userData.salary,
-        grade: userData.grade,
-        total_leave_balance: userData.total_leave_balance,
-        remaining_leave_balance: userData.remaining_leave_balance,
-        education: userData.education,
-        marital_status: userData.marital_status,
-        dependents_count: userData.dependents_count,
-        disability_status: userData.disability_status,
-        
-        
-      };
-  
-      await updateEmployee(userData.cin, dataToUpdate);
+      await updateEmployee(data.cin, data); // Ensure the `updateEmployee` function is correctly defined to accept these parameters
+      toast.success("Utilisateur modifié avec succès !");
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'employé :", error);
+      toast.error("Échec de la modification de l'utilisateur.");
     }
   };
-  
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto mt-10">
-      <h2 className="text-2xl font-bold text-center mb-6">Modifier l'utilisateur</h2>
-      
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="cin">CIN</Label>
-          <Input id="cin" name="cin" value={userData.cin} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="name">Nom</Label>
-          <Input id="name" name="name" value={userData.name} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="gender">Genre</Label>
-          <Select name="gender" value={userData.gender} onValueChange={handleSelectChange("gender")}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez le genre" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="male">Homme</SelectItem>
-              <SelectItem value="female">Femme</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="date_of_birth">Date de naissance</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {userData.date_of_birth ? format(userData.date_of_birth, "P", { locale: fr }) : <span>Choisir une date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={userData.date_of_birth}
-                onSelect={handleDateChange("date_of_birth")}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="place_of_birth">Lieu de naissance</Label>
-          <Input id="place_of_birth" name="place_of_birth" value={userData.place_of_birth} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="phone_number">Numéro de téléphone</Label>
-          <Input id="phone_number" name="phone_number" type="tel" value={userData.phone_number} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" name="email" type="email" value={userData.email} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="address">Adresse</Label>
-          <Input id="address" name="address" value={userData.address} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="emergency_contact">Contact d'urgence</Label>
-          <Input id="emergency_contact" name="emergency_contact" value={userData.emergency_contact} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="job_title">Titre du poste</Label>
-          <Input id="job_title" name="job_title" value={userData.job_title} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="department_id">ID du département</Label>
-          <Input id="department_id" name="department_id" value={userData.department_id} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="manager_id">ID du manager</Label>
-          <Input id="manager_id" name="manager_id" value={userData.manager_id} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="hire_date">Date d'embauche</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {userData.hire_date ? format(userData.hire_date, "P", { locale: fr }) : <span>Choisir une date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={userData.hire_date}
-                onSelect={handleDateChange("hire_date")}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="salary">Salaire</Label>
-          <Input id="salary" name="salary" type="number" value={userData.salary} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="grade">Grade</Label>
-          <Select name="grade" value={userData.grade} onValueChange={handleSelectChange("grade")}>
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionnez le grade" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Admin">Admin</SelectItem>
-              <SelectItem value="Employee">Employee</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="total_leave_balance">Solde total de congés</Label>
-          <Input id="total_leave_balance" name="total_leave_balance" type="number" value={userData.total_leave_balance} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="remaining_leave_balance">Solde de congés restant</Label>
-          <Input id="remaining_leave_balance" name="remaining_leave_balance" type="number" value={userData.remaining_leave_balance} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="education">Éducation</Label>
-          <Input id="education" name="education" value={userData.education} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="marital_status">Statut marital</Label>
-          <Input id="marital_status" name="marital_status" value={userData.marital_status} onChange={handleInputChange} />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="dependents_count">Nombre de personnes à charge</Label>
-          <Input id="dependents_count" name="dependents_count" type="number" value={userData.dependents_count} onChange={handleInputChange} />
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="disability_status" 
-            checked={userData.disability_status} 
-            onCheckedChange={(checked) => setUserData(prev => ({ ...prev, disability_status: checked as boolean }))}
-          />
-          <Label htmlFor="disability_status">Statut d'invalidité</Label>
-        </div>
-      </div>
-      
-      <Button type="submit" className="w-full">Enregistrer les modifications</Button>
-    </form>
+    <div className="mx-auto mt-10 mb-10">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 bg-white p-8 rounded-xl shadow-md max-w-2xl mx-auto mt-10"
+        >
+          <h2 className="text-2xl font-bold text-center mb-6">Modifier l'utilisateur</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="cin"
+              rules={{ required: "Entrer votre CIN", pattern: { value: /^\d{8}$/, message: "Entrer correctement votre CIN (8 nombres) " } }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CIN</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer CIN" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              rules={{ required: "Entrer votre nom et prenom" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nom & Prenom</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer votre nom et prenom" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="gender"
+              rules={{ required: "Selectionner votre sex" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Genre</FormLabel>
+                  <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez le sex" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Homme">Homme</SelectItem>
+                      <SelectItem value="Femme">Femme</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="date_of_birth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date de naissance</FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? format(field.value, "P", { locale: fr }) : <span>Choisir une date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={(date) => field.onChange(date)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="place_of_birth"
+              rules={{ required: "Entrer lieu de naissance" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Lieu de naissance</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer lieu de naissance" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phone_number"
+              rules={{ required: "Entrer votre numero de telephone" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Numéro de téléphone</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer votre numero de telephone" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email"
+              rules={{ required: "Entrer votre E-mail" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E-mail</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer votre E-mail" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="address"
+              rules={{ required: "Entrer votre address" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Adresse</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer votre address" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="emergency_contact"
+              rules={{ required: "Entrer votre contact d'urgence " }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Contact d'urgence</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer votre contact d'urgence" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="job_title"
+              rules={{ required: "Entrer titre du poste" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Titre du poste</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer titre du poste" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="department_id"
+              rules={{ required: "Entrer Id du département" }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Id du département</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Entrer Id du département" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="manager_id"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="manager_id">ID du manager</FormLabel>
+                  <FormControl>
+                    <Input {...field} id="manager_id" placeholder="Entrer l'ID du manager" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Hire Date */}
+            <FormField
+              name="hire_date"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date d'embauche</FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-start text-left font-normal">
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {field.value ? format(field.value, "P", { locale: fr }) : <span>Choisir une date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={(date) => field.onChange(date)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="salary"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Salaire</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="number" placeholder="Entrer le salaire" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="grade"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Grade</FormLabel>
+                  <FormControl>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez le grade" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                        <SelectItem value="Employee">Employee</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="total_leave_balance"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Solde total de congés</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="number" placeholder="Entrer le solde total" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="remaining_leave_balance"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Solde de congés restant</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="number" placeholder="Entrer le solde restant" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="education"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Éducation</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Entrer le niveau d'éducation" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="marital_status"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Statut marital</FormLabel>
+                  <FormControl>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez le statut marital" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="célibataire">célibataire</SelectItem>
+                        <SelectItem value="marié(e)">Marié(e)</SelectItem>
+                        <SelectItem value="divorcé(e)">divorcé(e)</SelectItem>
+                        <SelectItem value="veuf">veuf</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="dependents_count"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre de personnes à charge</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="number" placeholder="Entrer le nombre de personnes à charge" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              name="disability_status"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormLabel htmlFor="disability_status">Statut d'invalidité</FormLabel>
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex justify-center mt-6">
+            <Button type="submit" className="w-full max-w-xs">
+              Enregistrer les modifications
+            </Button>
+          </div>
+          
+        </form>
+      </Form>
+      <ToastContainer />
+    </div >
   )
 }

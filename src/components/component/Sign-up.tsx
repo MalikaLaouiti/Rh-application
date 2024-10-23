@@ -2,6 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createUser } from "@/action/employee";
+import Link from 'next/link';
+import { useForm } from "react-hook-form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { toast } from "react-toastify";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Form,
   FormControl,
@@ -10,14 +16,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 
 
-export default function Login() {
+
+
+export default function signUp() {
   const form = useForm({
     defaultValues: {
       cin: '',
@@ -70,7 +74,10 @@ export default function Login() {
           <FormField
             control={form.control}
             name="password"
-            rules={{ required: "Entrer votre Mot de passe", maxLength: { value: 8, message: "Mot de passe doit etre moin que 8 caracteres" }, minLength: { value: 5, message: "Mot de passe doit etre plus que 5 caracteres" }, pattern: { value: /^[A-Z0-9._%+*/!?-]+/, message: "Entrer mot de passse fort" } }}
+            rules={{ required: "Entrer votre Mot de passe", 
+              maxLength: { value: 8, message: "Mot de passe doit etre moin que 8 caracteres" }, 
+              minLength: { value: 5, message: "Mot de passe doit etre plus que 5 caracteres" }, 
+              pattern: { value: /^[A-Z|a-z|0-9|.|_|%|+|*|/|!|?|-]+/, message: "Entrer mot de passse fort" } }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Mot de passe</FormLabel>
@@ -105,11 +112,15 @@ export default function Login() {
               <FormItem>
                 <FormLabel>Genre</FormLabel>
                 <FormControl>
-                  <select {...field} className="block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Selectionner votre sex</option>
-                    <option value="Homme">Homme</option>
-                    <option value="Femme">Femme</option>
-                  </select>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez le sex" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Homme">Homme</SelectItem>
+                      <SelectItem value="Femme">Femme</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -154,18 +165,28 @@ export default function Login() {
               <FormItem>
                 <FormLabel>Sélectionnez votre rôle</FormLabel>
                 <FormControl>
-                  <select {...field} className="block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Sélectionnez votre rôle</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Employee">Employee</option>
-                  </select>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez le grade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Admin">Admin</SelectItem>
+                      <SelectItem value="Employee">Employee</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <Button type="submit" className="w-full">S'inscrire</Button>
-          <ToastContainer/>
+          <ToastContainer />
+          <div className="text-center text-sm text-muted-foreground">
+            J'ai un compte{" "}
+            <Link href="/Login" className="font-medium underline underline-offset-4 hover:text-primary" prefetch={false}>
+              Sign in
+            </Link>
+          </div>
         </form>
       </Form>
     </div>
