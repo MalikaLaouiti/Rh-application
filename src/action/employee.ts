@@ -57,6 +57,54 @@ export async function getAllEmployees() {
   }));
 }
 
+// function convertEmployeeData(data: Prisma.UserUpdateInput): Prisma.UserUpdateInput {
+//   const convertedData: Prisma.UserUpdateInput = { ...data };
+
+//   // Manually convert known fields to the appropriate types
+//   if (typeof convertedData.salary === "string") {
+//     const parsedSalary = parseFloat(convertedData.salary);
+//     if (!isNaN(parsedSalary)) {
+//       convertedData.salary = parsedSalary;
+//     }
+//   }
+
+//   if (typeof convertedData.total_leave_balance === "string") {
+//     const parsedTotalLeaveBalance = parseFloat(convertedData.total_leave_balance);
+//     if (!isNaN(parsedTotalLeaveBalance)) {
+//       convertedData.total_leave_balance = parsedTotalLeaveBalance;
+//     }
+//   }
+
+//   if (typeof convertedData.remaining_leave_balance === "string") {
+//     const parsedRemainingLeaveBalance = parseFloat(convertedData.remaining_leave_balance);
+//     if (!isNaN(parsedRemainingLeaveBalance)) {
+//       convertedData.remaining_leave_balance = parsedRemainingLeaveBalance;
+//     }
+//   }
+
+//   if (typeof convertedData.dependents_count === "string") {
+//     const parsedDependentsCount = parseInt(convertedData.dependents_count, 10);
+//     if (!isNaN(parsedDependentsCount)) {
+//       convertedData.dependents_count = parsedDependentsCount;
+//     }
+//   }
+
+//   if (typeof convertedData.department_id === "string") {
+//     const parsedDependentsCount = parseInt(convertedData.department_id, 10);
+//     if (!isNaN(parsedDependentsCount)) {
+//       convertedData.department_id = parsedDependentsCount;
+//     }
+//   }
+//   if (typeof convertedData.manager_id === "string") {
+//     const parsedDependentsCount = parseInt(convertedData.manager_id, 10);
+//     if (!isNaN(parsedDependentsCount)) {
+//       convertedData.manager_id = parsedDependentsCount;
+//     }
+//   }
+
+//   return convertedData;
+// }
+
 // READ: Get an employee by Cin
 export async function getEmployeeByCriteria(criteria: { cin?: string; department_id?: number; role?: string }) {
   const employee = await prisma.user.findFirst({
@@ -67,14 +115,26 @@ export async function getEmployeeByCriteria(criteria: { cin?: string; department
 
 
 // UPDATE: Update an employee's details
-export async function updateEmployee(cin: string, data: Prisma.UserUpdateInput) {
+// UPDATE: Update an employee's details
+export async function updateEmployee(cin: string, data: Prisma.UserUncheckedUpdateInput) {
   console.log(data);
+  const { manager_id, department_id,salary,total_leave_balance,remaining_leave_balance, ...otherData } = data;
+
   const employee = await prisma.user.update({
     where: { cin },
-    data,
+    data: {
+      total_leave_balance: total_leave_balance !== undefined ? parseFloat(total_leave_balance as string) : undefined,
+      remaining_leave_balance: typeof remaining_leave_balance === 'string' ? parseInt(remaining_leave_balance, 10) : remaining_leave_balance,
+      salary: salary !== undefined ? parseFloat(salary as string) : undefined,
+      department_id: department_id !== undefined ? parseInt(department_id as string) : undefined,
+      manager_id: manager_id ? parseInt(manager_id as string) : undefined,
+      ...otherData,
+    },
   });
+
   return employee;
 }
+
 
 // DELETE: Remove an employee by Cin
 export async function deleteEmployee(cin: string) {

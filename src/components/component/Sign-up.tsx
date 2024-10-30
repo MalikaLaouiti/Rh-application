@@ -75,8 +75,8 @@ export default function signUp() {
             control={form.control}
             name="password"
             rules={{ required: "Entrer votre Mot de passe", 
-              maxLength: { value: 8, message: "Mot de passe doit etre moin que 8 caracteres" }, 
-              minLength: { value: 5, message: "Mot de passe doit etre plus que 5 caracteres" }, 
+              
+              minLength: { value: 6, message: "Mot de passe doit etre plus que 5 caracteres" }, 
               pattern: { value: /^[A-Z|a-z|0-9|.|_|%|+|*|/|!|?|-]+/, message: "Entrer mot de passse fort" } }}
             render={({ field }) => (
               <FormItem>

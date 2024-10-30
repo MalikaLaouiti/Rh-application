@@ -35,7 +35,7 @@ interface UserData {
   emergency_contact: string;
   job_title: string;
   department_id: number;
-  manager_id: string;
+  manager_id: number;
   hire_date: Date;
   salary: number;
   grade: string;
@@ -61,9 +61,9 @@ export default function EditUserForm() {
       emergency_contact: "",
       job_title: "",
       // department_id: 0 as number,
-      // manager_id: "",
+      manager_id: 0,
       hire_date: new Date(2000, 0, 1),
-      salary: 0,
+      salary: 0 as number,
       grade: "",
       total_leave_balance: 0,
       remaining_leave_balance: 0,
@@ -201,7 +201,7 @@ export default function EditUserForm() {
                 <FormItem>
                   <FormLabel>Numéro de téléphone</FormLabel>
                   <FormControl>
-                    <Input placeholder="Entrer votre numero de telephone" {...field} />
+                    <Input  placeholder="Entrer votre numero de telephone" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -286,7 +286,7 @@ export default function EditUserForm() {
                 <FormItem>
                   <FormLabel htmlFor="manager_id">ID du manager</FormLabel>
                   <FormControl>
-                    <Input {...field} id="manager_id" placeholder="Entrer l'ID du manager" />
+                    <Input {...field} type="number" id="manager_id" placeholder="Entrer l'ID du manager" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
