@@ -4,6 +4,7 @@ import { prisma } from '@/server/prisma';
 import { Prisma } from '@prisma/client';
 import { hash } from "bcrypt-ts";
 import { User } from 'next-auth';
+import { Z_UNKNOWN } from 'zlib';
 
 
 
@@ -46,7 +47,7 @@ export async function getAllEmployees() {
       name: true,
       email: true,
       grade: true,
-      department_id: true,
+      department: true,
     },
   });
   return employees.map(employee => ({
@@ -113,27 +114,41 @@ export async function getEmployeeByCriteria(criteria: { cin?: string; department
   return employee;
 }
 
-
-// UPDATE: Update an employee's details
 // UPDATE: Update an employee's details
 export async function updateEmployee(cin: string, data: Prisma.UserUncheckedUpdateInput) {
   console.log(data);
-  const { manager_id, department_id,salary,total_leave_balance,remaining_leave_balance, ...otherData } = data;
 
+  const {
+    manager_id,
+    department,
+    salary,
+    total_leave_balance,
+    remaining_leave_balance,
+    ...otherData
+  } = data;
+
+  // Start with the mandatory fields from `otherData`
+  const updateData: Prisma.UserUncheckedUpdateInput = {
+    ...otherData,
+  };
+
+  // Conditionally add fields only if they are defined
+  if (salary) updateData.salary = parseFloat(salary as string);
+  if (total_leave_balance) updateData.total_leave_balance = parseFloat(total_leave_balance as string);
+  if (remaining_leave_balance) updateData.remaining_leave_balance = parseInt(remaining_leave_balance as string, 10);
+  if (department) updateData.department = (department as string);
+  if (manager_id) updateData.manager_id = parseInt(manager_id as string);
+
+  // Perform the update with the dynamically built data object
   const employee = await prisma.user.update({
     where: { cin },
-    data: {
-      total_leave_balance: total_leave_balance !== undefined ? parseFloat(total_leave_balance as string) : undefined,
-      remaining_leave_balance: typeof remaining_leave_balance === 'string' ? parseInt(remaining_leave_balance, 10) : remaining_leave_balance,
-      salary: salary !== undefined ? parseFloat(salary as string) : undefined,
-      department_id: department_id !== undefined ? parseInt(department_id as string) : undefined,
-      manager_id: manager_id ? parseInt(manager_id as string) : undefined,
-      ...otherData,
-    },
+    data: updateData,
   });
 
   return employee;
 }
+
+
 
 
 // DELETE: Remove an employee by Cin

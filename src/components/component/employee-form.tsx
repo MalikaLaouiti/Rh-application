@@ -34,7 +34,7 @@ interface UserData {
   address: string;
   emergency_contact: string;
   job_title: string;
-  department_id: number;
+  department: string;
   manager_id: number;
   hire_date: Date;
   salary: number;
@@ -60,7 +60,7 @@ export default function EditUserForm() {
       address: "",
       emergency_contact: "",
       job_title: "",
-      // department_id: 0 as number,
+      department: "",
       manager_id: 0,
       hire_date: new Date(2000, 0, 1),
       salary: 0 as number,
@@ -83,6 +83,7 @@ export default function EditUserForm() {
     try {
       await updateEmployee(data.cin, data); // Ensure the `updateEmployee` function is correctly defined to accept these parameters
       toast.success("Utilisateur modifié avec succès !");
+      //reset();//a tester
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'employé :", error);
       toast.error("Échec de la modification de l'utilisateur.");
@@ -267,13 +268,24 @@ export default function EditUserForm() {
             />
             <FormField
               control={form.control}
-              name="department_id"
-              rules={{ required: "Entrer Id du département" }}
+              name="department"
+              rules={{ required: "Entrer votre département" }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Id du département</FormLabel>
+                  <FormLabel> département</FormLabel>
                   <FormControl>
-                    <Input placeholder="Entrer Id du département" {...field} />
+                  <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez votre département" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Technique">Technique</SelectItem>
+                        <SelectItem value="Informatique">Informatique</SelectItem>
+                        <SelectItem value="TIC">TIC</SelectItem>
+                        <SelectItem value="EEA">EEA</SelectItem>
+                        <SelectItem value="MATH App">MATH App</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
