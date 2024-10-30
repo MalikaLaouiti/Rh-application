@@ -10,10 +10,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SearchIcon, UserIcon, ShieldIcon, DownloadIcon } from "lucide-react"
-import { Toast } from "@/components/ui/toast"
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import jsPDF from 'jspdf'
 import 'jspdf-autotable';
-import { getAllEmployees } from "@/action/employee";
+import { deleteEmployee, getAllEmployees } from "@/action/employee";
 
 
 const UserOptions = [
@@ -25,11 +26,11 @@ const UserOptions = [
 // User type based on Prisma schema
 interface User {
   id: number ;
-  cin: number ; 
+  cin: string ; 
   name: string ; 
   email: string; 
   grade: string ; 
-  department_id:number 
+  department:number 
 }
 
 interface ListProps {
@@ -58,17 +59,25 @@ export default function List({ employees }: ListProps) {
         user.name,
         user.email,
         user.grade,
-        user.department_id
+        user.department
       ]),
       startY: 20
     });
     doc.save("liste_employes_administrateurs.pdf");
-    Toast({
-      title: "Exportation réussie",
-      description: "Le PDF a été généré et téléchargé avec succès.",
-    });
+    toast.success("Exportation réussie");
+    
   };
 
+  const onSubmit = async (data: User) => {
+    try {
+      await deleteEmployee(data.cin, ); // Ensure the `updateEmployee` function is correctly defined to accept these parameters
+      toast.success("Utilisateur supprimé avec succès !");
+      //reset();//a tester
+    } catch (error) {
+      console.error("Erreur lors de la suppression de l'employé :", error);
+      toast.error("Échec de la suppression de l'utilisateur.");
+    }
+  };
   const user = getAllEmployees();
   return (
     <Card className="w-full">
@@ -128,7 +137,7 @@ export default function List({ employees }: ListProps) {
                     {user.grade}
                   </Badge>
                 </TableCell>
-                <TableCell>{user.department_id}</TableCell>
+                <TableCell>{user.department}</TableCell>
                 <TableCell>
                   <Dialog>
                     <DialogTrigger asChild>
@@ -167,12 +176,16 @@ export default function List({ employees }: ListProps) {
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="department" className="text-right">Département</Label>
-                            <Input id="department" value={selectedUser.department_id} className="col-span-3" readOnly />
+                            <Input id="department" value={selectedUser.department} className="col-span-3" readOnly />
                           </div>
                         </div>
                       )}
                     </DialogContent>
                   </Dialog>
+                      <Button variant="outline" size="sm" onClick={() => onSubmit(user)}>
+                        Supprimer
+                      </Button>
+                      <ToastContainer/>
                 </TableCell>
               </TableRow>
             ))}
