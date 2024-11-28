@@ -7,24 +7,6 @@ import { Button } from "@/components/ui/button"
 export default function Home() {
   return (
     <div className="flex flex-col min-h-dvh">
-      <header className="bg-primary text-primary-foreground px-4 lg:px-6 h-20 flex items-center">
-        <Link href="#" className="flex items-center justify-center" prefetch={false}>
-          <span className="sr-only">Gestion des ressources humaines</span>
-        </Link>
-        <img
-            src="http://www.isimm.rnu.tn//storage/app/public/coordonnees/May2023/pGmJGgcAUDZCgyHGMGJR.png"
-            className="h-16 w-15 rounded-md"
-            alt="ISIMM Logo"
-          />
-        <nav className="ml-auto flex gap-4 sm:gap-6">              
-          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            À propos
-          </Link>
-          <Link href="#" className="text-sm font-medium hover:underline underline-offset-4" prefetch={false}>
-            Contact
-          </Link>
-        </nav>
-      </header>
       <main className="flex-1">
         <section className="w-full pt-12 md:pt-24 lg:pt-32 border-y">
           <div className="container space-y-10 xl:space-y-16 px-4 md:px-6">
@@ -116,82 +98,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="bg-muted p-6 md:py-12 w-full ml-auto mr-">
-        <div className="container max-w-7xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-8 text-sm">
-          <div className="grid gap-2">
-            <h3 className="font-semibold">L'institut</h3>
-            <Link href="#" prefetch={false}>
-              À propos de nous
-            </Link>
-            <Link href="#" prefetch={false}>
-              Notre équipe
-            </Link>
-            <Link href="#" prefetch={false}>
-              Carrières
-            </Link>
-            <Link href="#" prefetch={false}>
-              Actualités
-            </Link>
-          </div>
-          {/* <div className="grid gap-1">
-            <h3 className="font-semibold">Produits</h3>
-            <Link href="#" prefetch={false}>
-              Gestion des RH
-            </Link>
-            <Link href="#" prefetch={false}>
-              Paie
-            </Link>
-            <Link href="#" prefetch={false}>
-              Avantages sociaux
-            </Link>
-            <Link href="#" prefetch={false}>
-              Suivi du temps
-            </Link>
-          </div>
-          <div className="grid gap-1">
-            <h3 className="font-semibold">Ressources</h3>
-            <Link href="#" prefetch={false}>
-              Blog
-            </Link>
-            <Link href="#" prefetch={false}>
-              Documentation
-            </Link>
-            <Link href="#" prefetch={false}>
-              Assistance
-            </Link>
-            <Link href="#" prefetch={false}>
-              FAQ
-            </Link>
-          </div>
-          <div className="grid gap-1">
-            <h3 className="font-semibold">Légal</h3>
-            <Link href="#" prefetch={false}>
-              Politique de confidentialité
-            </Link>
-            <Link href="#" prefetch={false}>
-              Conditions d'utilisation
-            </Link>
-            <Link href="#" prefetch={false}>
-              Politique de cookies
-            </Link>
-          </div> */}
-          <div className="grid gap-2 ml-auto">
-            <h3 className="font-semibold">Contact</h3>
-            <Link href="#" prefetch={false}>
-              Assistance
-            </Link>
-            <Link href="#" prefetch={false}>
-              Ventes
-            </Link>
-            <Link href="#" prefetch={false}>
-              Presse
-            </Link>
-            <Link href="#" prefetch={false}>
-              Partenariats
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }

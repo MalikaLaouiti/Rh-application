@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-import Select from 'react-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -15,13 +15,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import jsPDF from 'jspdf'
 import 'jspdf-autotable';
 import { deleteEmployee, getAllEmployees } from "@/action/employee";
-
-
-const UserOptions = [
-  { value: 'id', label: 'ID' },
-  { value: 'name', label: 'Name' },
-  { value: 'department', label: 'Department' },
-];
 
 // User type based on Prisma schema
 interface User {
@@ -39,14 +32,15 @@ interface ListProps {
 
 export default function List({ employees }: ListProps) {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedFilter, setSelectedFilter] = useState<{ value: string; label: string } | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<string | undefined >(undefined);
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   // Filter users based on search and selected filter
-  const filteredUsers = employees.filter(user => {
+  const filteredUsers = employees.filter((user) => {
     if (!selectedFilter || !searchTerm) return true;
-    const fieldValue = user[selectedFilter.value as keyof User] as string;
+    const fieldValue = String(user[selectedFilter as keyof User]); // Ensure consistent comparison
     return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
   });
+  
 
   // Export filtered users to PDF
   const exportToPDF = () => {
@@ -68,6 +62,9 @@ export default function List({ employees }: ListProps) {
     
   };
 
+  const handleValueChange = (value:string) => {
+    setSelectedFilter(value);
+  };
   const onSubmit = async (data: User) => {
     try {
       await deleteEmployee(data.cin, ); // Ensure the `updateEmployee` function is correctly defined to accept these parameters
@@ -95,13 +92,16 @@ export default function List({ employees }: ListProps) {
       </CardHeader>
       <CardContent>
         <div className="mb-4">
-          <Select
-            classNamePrefix="custom-select"
-            value={selectedFilter}
-            onChange={(option) => setSelectedFilter(option)}
-            options={UserOptions}
-            placeholder="Rechercher selon :"
-          />
+        <Select value={selectedFilter} onValueChange={handleValueChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Rechercher selon :" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="id">ID</SelectItem>
+                        <SelectItem value="name">nom et prenom</SelectItem>
+                        <SelectItem value="department">départment</SelectItem>
+                      </SelectContent>
+                    </Select>
           <Label htmlFor="search" className="sr-only">Rechercher</Label>
           <div className="relative">
             <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
