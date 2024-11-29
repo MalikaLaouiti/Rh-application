@@ -18,12 +18,12 @@ import { deleteEmployee, getAllEmployees } from "@/action/employee";
 
 // User type based on Prisma schema
 interface User {
-  id: number ;
-  cin: string ; 
-  name: string ; 
-  email: string; 
-  grade: string ; 
-  department:number 
+  id: number;
+  cin: string;
+  name: string;
+  email: string;
+  grade: string;
+  department: number
 }
 
 interface ListProps {
@@ -32,7 +32,7 @@ interface ListProps {
 
 export default function List({ employees }: ListProps) {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedFilter, setSelectedFilter] = useState<string | undefined >(undefined);
+  const [selectedFilter, setSelectedFilter] = useState<string | undefined>(undefined);
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   // Filter users based on search and selected filter
   const filteredUsers = employees.filter((user) => {
@@ -40,14 +40,14 @@ export default function List({ employees }: ListProps) {
     const fieldValue = String(user[selectedFilter as keyof User]); // Ensure consistent comparison
     return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
   });
-  
+
 
   // Export filtered users to PDF
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.text("Liste des Employés et Administrateurs", 14, 15);
     (doc as any).autoTable({
-      head: [['CIN','Nom', 'Email', 'Rôle', 'Département']],
+      head: [['CIN', 'Nom', 'Email', 'Rôle', 'Département']],
       body: filteredUsers.map(user => [
         user.cin,
         user.name,
@@ -59,15 +59,15 @@ export default function List({ employees }: ListProps) {
     });
     doc.save("liste_employes_administrateurs.pdf");
     toast.success("Exportation réussie");
-    
+
   };
 
-  const handleValueChange = (value:string) => {
+  const handleValueChange = (value: string) => {
     setSelectedFilter(value);
   };
   const onSubmit = async (data: User) => {
     try {
-      await deleteEmployee(data.cin, ); // Ensure the `updateEmployee` function is correctly defined to accept these parameters
+      await deleteEmployee(data.cin,); // Ensure the `updateEmployee` function is correctly defined to accept these parameters
       toast.success("Utilisateur supprimé avec succès !");
       //reset();//a tester
     } catch (error) {
@@ -91,17 +91,19 @@ export default function List({ employees }: ListProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4">
-        <Select value={selectedFilter} onValueChange={handleValueChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Rechercher selon :" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="id">ID</SelectItem>
-                        <SelectItem value="name">nom et prenom</SelectItem>
-                        <SelectItem value="department">départment</SelectItem>
-                      </SelectContent>
-                    </Select>
+        <div className="mb-4 relative">
+          <Select value={selectedFilter} onValueChange={handleValueChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Rechercher selon :" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="id">ID</SelectItem>
+              <SelectItem value="name">nom et prenom</SelectItem>
+              <SelectItem value="department">départment</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="mb-4">  
           <Label htmlFor="search" className="sr-only">Rechercher</Label>
           <div className="relative">
             <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -182,10 +184,10 @@ export default function List({ employees }: ListProps) {
                       )}
                     </DialogContent>
                   </Dialog>
-                      <Button variant="outline" size="sm" onClick={() => onSubmit(user)}>
-                        Supprimer
-                      </Button>
-                      <ToastContainer/>
+                  <Button variant="outline" size="sm" onClick={() => onSubmit(user)}>
+                    Supprimer
+                  </Button>
+                  <ToastContainer />
                 </TableCell>
               </TableRow>
             ))}
@@ -193,6 +195,6 @@ export default function List({ employees }: ListProps) {
         </Table>
       </CardContent>
     </Card>
-    
+
   );
 }
