@@ -1,4 +1,4 @@
-"sue client"
+"use client"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -27,9 +27,9 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="mx-auto w-full max-w-md space-y-6 rounded-lg bg-card p-6 shadow-lg">
         <div className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold">Welcome back!</h1>
+          <h1 className="text-3xl font-bold">Bienvenue !</h1>
           <p className="text-muted-foreground">
-            Enter your credentials to access your account.
+              Entrez vos donnes pour acceder à votre compte
           </p>
         </div>
 
@@ -53,10 +53,10 @@ export default function Login() {
               control={form.control}
               name="email"
               rules={{
-                required: "Enter an email",
+                required: "Entrez votre email",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Enter a valid email",
+                  message: "Entrez un email correct",
                 },
               }}
               render={({ field }) => (
@@ -65,7 +65,7 @@ export default function Login() {
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder="Enter your email"
+                      placeholder="Entrez votre email"
                       {...field}
                     />
                   </FormControl>
@@ -77,27 +77,23 @@ export default function Login() {
               control={form.control}
               name="password"
               rules={{
-                required: "Enter your password",
-                maxLength: {
-                  value: 8,
-                  message: "Password must be less than 8 characters",
-                },
+                required: "Entrez votre mot de passe",
                 minLength: {
                   value: 5,
-                  message: "Password must be more than 5 characters",
+                  message: "mot de passe doit contenir plus que 5 caractères",
                 },
                 pattern: {
                   value: /^[A-Z0-9._%+*/!?-]+/,
-                  message: "Enter a stronger password",
+                  message: "Entrez un mot de passe fort",
                 },
               }}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Mot de passe</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
-                      placeholder="Enter your password"
+                      placeholder="Entrez votre mot de passe"
                       {...field}
                     />
                   </FormControl>
@@ -110,21 +106,21 @@ export default function Login() {
               className="text-sm font-medium underline underline-offset-4 hover:text-primary"
               prefetch={false}
             >
-              Forgot password?
+              Mot de passe oublié?
             </Link>
             <Button type="submit" className="w-full">
-              Sign in
+              Se connecter
             </Button>
           </form>
         </Form>
         <div className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          Vous n'avez pas de compte ?{" "}
           <Link
             href="/sign-up"
             className="font-medium underline underline-offset-4 hover:text-primary"
             prefetch={false}
           >
-            Sign up
+            S'inscrire
           </Link>
         </div>
       </div>

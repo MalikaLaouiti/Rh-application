@@ -41,29 +41,30 @@ export default function RootLayout({
           </nav>
         </header>
         <main className={inter.className}>{children}</main>
+      
+        <footer className="bg-muted p-6 pl-6 w-full ">
+          <div className="container max-w-7xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-8 text-sm">
+            <div className="grid gap-2">
+              <h3 className="font-semibold">L'institut</h3>
+              <Link href="http://www.isimm.rnu.tn/public/isimm" prefetch={false}>
+                À propos de nous
+              </Link>
+              <Link href="http://www.isimm.rnu.tn/public/contact" prefetch={false}>
+                Contacter nous
+              </Link>
+            </div>
+            <div className="grid gap-2 ml-auto">
+              <h3 className="font-semibold">Contact</h3>
+              <Link href="http://www.isimm.rnu.tn/public/" prefetch={false}>
+                Site Web
+              </Link>
+              <Link href="https://www.facebook.com/profile.php?id=100063489403806" prefetch={false}>
+                Facebook
+              </Link>
+            </div>
+          </div>
+        </footer>
       </body>
-      <footer className="bg-muted p-6 pl-6 w-full ">
-        <div className="container max-w-7xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-8 text-sm">
-          <div className="grid gap-2">
-            <h3 className="font-semibold">L'institut</h3>
-            <Link href="http://www.isimm.rnu.tn/public/isimm" prefetch={false}>
-              À propos de nous
-            </Link>
-            <Link href="http://www.isimm.rnu.tn/public/contact" prefetch={false}>
-              Contacter nous
-            </Link>
-          </div>
-          <div className="grid gap-2 ml-auto">
-            <h3 className="font-semibold">Contact</h3>
-            <Link href="http://www.isimm.rnu.tn/public/" prefetch={false}>
-              Site Web
-            </Link>
-            <Link href="https://www.facebook.com/profile.php?id=100063489403806" prefetch={false}>
-              Facebook
-            </Link>
-          </div>
-        </div>
-      </footer>
     </html>
   );
 }
