@@ -3,11 +3,6 @@
 import { prisma } from '@/server/prisma';
 import { Prisma } from '@prisma/client';
 import { hash } from "bcrypt-ts";
-import { User } from 'next-auth';
-
-
-
-
 
 export async function createUser(data: FormData) {
   console.log(data)
@@ -113,22 +108,6 @@ export async function deleteEmployee(cin: string) {
   return employee;
 }
 
-export async function getCountForCurrentMonth() {
-  const now = new Date(); // Date actuelle
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); // Début du mois
-  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59); // Fin du mois
-
-  const count = await prisma.user.count({
-    where: {
-      createdAt: {
-        gte: startOfMonth, // Plus grand ou égal au début du mois
-        lte: endOfMonth,   // Plus petit ou égal à la fin du mois
-      },
-    },
-  });
-
-  return count;
-}
 
   // const address = data.get('address') ;
   // const emergency_contact = data.get('emergency_contact') ;
