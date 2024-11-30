@@ -4,6 +4,8 @@ import { prisma } from '@/server/prisma';
 import { Prisma } from '@prisma/client';
 import { hash } from "bcrypt-ts";
 
+
+
 export async function createUser(data: FormData) {
   console.log(data)
   const cin = data.get('cin');
