@@ -4,33 +4,32 @@ import { prisma } from '@/server/prisma';
 import { Prisma } from '@prisma/client';
 import { hash } from "bcrypt-ts";
 
-export async function createConge(data: FormData) {
-  console.log(data)
-  const cin = data.get('cin');
-  const password = data.get('password') ;
-  const name = data.get('name');
-  const gender = data.get('gender') ;
-  const phone_number = data.get('phone_number') ;
-  const email = data.get('email') ;
-  const grade = data.get('grade') ;
- 
-  // Hash the password using bcrypt
-  const passwordHash = await hash(password?.toString() ?? '', 10);
+export async function createDemandeConge(data: FormData) {
+  console.log(data);
 
-  // Create a new user in the database
-  const user = await prisma.user.create({
+  const startDate = data.get("startDate");
+  const endDate = data.get("endDate");
+  const leaveType = data.get("leaveType");
+  const reason = data.get("reason");
+  const employeeId= prisma.session?.userId;
+
+  if (!startDate || !endDate || !leaveType || !userId) {
+    throw new Error("Missing required fields: startDate, endDate, leaveType, or userId");
+  }
+
+  // Create a new leave request in the database
+  const leaveRequest = await prisma.demandeConge.create({
     data: {
-      cin: cin as unknown as string,
-      password: passwordHash as string,
-      name: name as string,
-      gender: gender as string,
-      phone_number: phone_number as string,
-      email: email as string,
-      grade: grade as string,
-    }
+      startDate: new Date(startDate.toString()),
+      endDate: new Date(endDate.toString()),
+      leaveType: leaveType.toString(),
+      reason: reason?.toString() ?? "", // Optional field
+      employeeId: parseInt(employeeId.toString(), 10), // Assuming userId is numeric
+      
+    },
   });
-  console.log(user)
-  return user;
+
+  return leaveRequest;
 }
 
 // READ: Get all employees

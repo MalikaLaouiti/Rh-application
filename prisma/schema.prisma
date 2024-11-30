@@ -36,9 +36,8 @@ model User {
   id                      Int            @id @default(autoincrement())
   department              String?
   accounts                Account[]
-  conge_requests          Conge[] @relation("RequestRelation")
+  congeRequestedBy          Conge[] @relation("RequestRelation")
   ApproveDemande          Conge[] @relation("ApprovalRelation")
-  Employe                 Conge[]
   Document_archif         Document[]
   sessions                Session[]
   manager                 User?          @relation("ManagerEmployees", fields: [manager_id], references: [id])
@@ -81,25 +80,22 @@ model VerificationToken {
   @@id([identifier, token])
 }
 
-
-
 model Conge {
   id           String   @id @default(cuid())
-  employeeId   Int
+  employeeCin   Int
   startDate    DateTime
   endDate      DateTime
   leaveType    String
-  status       String   @default("En attente")
-  requestedAt  DateTime @default(now())
-  approvedAt   DateTime
+  status       String?   @default("En attente")
+  requestedAt  DateTime? @default(now())
+  approvedAt   DateTime?
   reason       String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  approvedById Int
-  userId       Int
-  requestedBy    User     @relation("RequestRelation", fields:[employeeId], references: [id])
-  approvedBy   User     @relation("ApprovalRelation", fields: [approvedById], references: [id])
-  User         User     @relation(fields: [userId], references: [id])
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @updatedAt
+  approvedById Int?
+  requestedBy  User?     @relation("RequestRelation", fields:[employeeCin], references: [id])
+  approvedBy   User?     @relation("ApprovalRelation", fields: [approvedById], references: [id])
+  
 }
 
 model Document {
