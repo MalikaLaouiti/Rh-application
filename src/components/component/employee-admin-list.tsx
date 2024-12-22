@@ -67,7 +67,7 @@ export default function List({ employees }: ListProps) {
   };
   const onSubmit = async (data: User) => {
     try {
-      await deleteEmployee(data.cin,); // Ensure the `updateEmployee` function is correctly defined to accept these parameters
+      await deleteEmployee(data.cin,); 
       toast.success("Utilisateur supprimé avec succès !");
       //reset();//a tester
     } catch (error) {

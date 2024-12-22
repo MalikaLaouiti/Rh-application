@@ -82,7 +82,7 @@ model VerificationToken {
 
 model Conge {
   id           String   @id @default(cuid())
-  employeeCin   Int
+  employeeCin  String
   startDate    DateTime
   endDate      DateTime
   leaveType    String
@@ -92,9 +92,9 @@ model Conge {
   reason       String
   createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt
-  approvedById Int?
-  requestedBy  User?     @relation("RequestRelation", fields:[employeeCin], references: [id])
-  approvedBy   User?     @relation("ApprovalRelation", fields: [approvedById], references: [id])
+  approvedById String?
+  requestedBy  User?     @relation("RequestRelation", fields:[employeeCin], references: [cin])
+  approvedBy   User?     @relation("ApprovalRelation", fields: [approvedById], references: [cin])
   
 }
 

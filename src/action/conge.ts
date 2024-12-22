@@ -1,108 +1,214 @@
-"use server"
+"use server";
 
 import { prisma } from '@/server/prisma';
 import { Prisma } from '@prisma/client';
-import { hash } from "bcrypt-ts";
 
-export async function createDemandeConge(data: FormData) {
+// CREATE: Create a new leave request
+export async function createLeaveRequest(data: FormData) {
   console.log(data);
+  const employeeCin = data.get('employeeCin') as string;
+  const startDate = data.get('startDate');
+  const endDate = data.get('endDate');
+  const leaveType = data.get('leaveType');
+  const reason = data.get('reason');
 
-  const startDate = data.get("startDate");
-  const endDate = data.get("endDate");
-  const leaveType = data.get("leaveType");
-  const reason = data.get("reason");
-  const employeeId= prisma.session?.userId;
+  if (!employeeCin || !startDate || !endDate || !leaveType || !reason) {
+    throw new Error("Missing required fields");
+  }
 
-  if (!startDate || !endDate || !leaveType || !userId) {
-    throw new Error("Missing required fields: startDate, endDate, leaveType, or userId");
+  const user = await prisma.user.findUnique({
+    where: { cin: employeeCin },
+  });
+
+  if (!user) {
+    throw new Error("Employee does not exist with the provided CIN.");
   }
 
   // Create a new leave request in the database
-  const leaveRequest = await prisma.demandeConge.create({
+  const leaveRequest = await prisma.conge.create({
     data: {
-      startDate: new Date(startDate.toString()),
-      endDate: new Date(endDate.toString()),
-      leaveType: leaveType.toString(),
-      reason: reason?.toString() ?? "", // Optional field
-      employeeId: parseInt(employeeId.toString(), 10), // Assuming userId is numeric
-      
+      employeeCin: employeeCin as string,
+      startDate: new Date(startDate as string),
+      endDate: new Date(endDate as string),
+      leaveType: leaveType as string,
+      reason: reason as string,
+      // status and requestedAt will use default values
+    }
+  });
+
+  return leaveRequest;
+}
+
+// READ: Get all leave requests
+export async function getAllLeaveRequests() {
+  const leaveRequests = await prisma.conge.findMany({
+    include: {
+      requestedBy: {
+        select: {
+          name: true,
+          department: true,
+        }
+      },
+      approvedBy: {
+        select: {
+          name: true,
+        }
+      }
+    },
+  });
+  return leaveRequests;
+}
+
+// READ: Get leave requests by criteria
+export async function getLeaveRequestsByCriteria(criteria: {
+  employeeCin?: string;
+  status?: string;
+  leaveType?: string;
+  startDate?: Date;
+  endDate?: Date;
+}) {
+  const leaveRequests = await prisma.conge.findMany({
+    where: criteria,
+    include: {
+      requestedBy: {
+        select: {
+          name: true,
+          department: true,
+        }
+      },
+      approvedBy: {
+        select: {
+          name: true,
+        }
+      }
+    },
+  });
+  return leaveRequests;
+}
+
+// READ: Get a specific leave request by ID
+export async function getLeaveRequestById(id: string) {
+  console.log(id);
+  const leaveRequest = await prisma.conge.findUnique({
+    where: { id : id },
+    include: {
+      requestedBy: {
+        select: {
+          name: true,
+          department: true,
+        }
+      },
+      approvedBy: {
+        select: {
+          name: true,
+        }
+      }
+    },
+  });
+  console.log(leaveRequest);
+  return leaveRequest;
+}
+
+// UPDATE: Update a leave request
+export async function updateLeaveRequest(id: string, data: Prisma.CongeUncheckedUpdateInput) {
+  const {
+    status,
+    approvedById,
+    approvedAt,
+    ...otherData
+  } = data;
+
+  const updateData: Prisma.CongeUncheckedUpdateInput = {
+    ...otherData,
+  };
+
+  // Handle special fields
+  if (status) updateData.status = status as string;
+  if (approvedById) {
+    updateData.approvedById = approvedById as string;
+    updateData.approvedAt = new Date(); // Set approval date when approver is set
+  }
+
+  // Perform the update
+  const leaveRequest = await prisma.conge.update({
+    where: { id },
+    data: updateData,
+    include: {
+      requestedBy: {
+        select: {
+          name: true,
+          department: true,
+        }
+      },
+      approvedBy: {
+        select: {
+          name: true,
+        }
+      }
     },
   });
 
   return leaveRequest;
 }
 
-// READ: Get all employees
-export async function getAllEmployees() {
-  const employees = await prisma.user.findMany({
-    select: {
-      id: true,
-      cin: true,
-      name: true,
-      email: true,
-      grade: true,
-      department: true,
+// DELETE: Remove a leave request
+export async function deleteLeaveRequest(id: string) {
+  const leaveRequest = await prisma.conge.delete({
+    where: { id },
+  });
+  return leaveRequest;
+}
+
+// Additional utility function: Approve a leave request
+export async function approveLeaveRequest(id: string, approverId: string) {
+  const leaveRequest = await prisma.conge.update({
+    where: { id },
+    data: {
+      status: 'Approved',
+      approvedById: approverId,
+      approvedAt: new Date(),
+    },
+    include: {
+      requestedBy: {
+        select: {
+          name: true,
+          department: true,
+        }
+      },
+      approvedBy: {
+        select: {
+          name: true,
+        }
+      }
     },
   });
-  return employees.map(employee => ({
-    ...employee,
-    cin: employee.cin!, // Assert non-null value
-    name: employee.name!, // Assert non-null value
-    grade: employee.grade!, // Assert non-null value
-    
-  }));
+
+  return leaveRequest;
 }
 
-
-// READ: Get an employee by Cin
-export async function getEmployeeByCriteria(criteria: { cin?: string; department_id?: number; role?: string }) {
-  const employee = await prisma.user.findFirst({
-    where: criteria,
-  });
-  return employee;
-}
-
-// UPDATE: Update an employee's details
-export async function updateEmployee(cin: string, data: Prisma.UserUncheckedUpdateInput) {
-  console.log(data);
-
-  const {
-    manager_id,
-    department,
-    salary,
-    total_leave_balance,
-    remaining_leave_balance,
-    ...otherData
-  } = data;
-
-  // Start with the mandatory fields from `otherData`
-  const updateData: Prisma.UserUncheckedUpdateInput = {
-    ...otherData,
-  };
-
-  // Conditionally add fields only if they are defined
-  if (salary) updateData.salary = parseFloat(salary as string);
-  if (total_leave_balance) updateData.total_leave_balance = parseFloat(total_leave_balance as string);
-  if (remaining_leave_balance) updateData.remaining_leave_balance = parseInt(remaining_leave_balance as string, 10);
-  if (department) updateData.department = (department as string);
-  if (manager_id) updateData.manager_id = parseInt(manager_id as string);
-
-  // Perform the update with the dynamically built data object
-  const employee = await prisma.user.update({
-    where: { cin },
-    data: updateData,
+// Additional utility function: Reject a leave request
+export async function rejectLeaveRequest(id: string, approverId: string) {
+  const leaveRequest = await prisma.conge.update({
+    where: { id },
+    data: {
+      status: 'Rejected',
+      approvedById: approverId,
+      approvedAt: new Date(),
+    },
+    include: {
+      requestedBy: {
+        select: {
+          name: true,
+          department: true,
+        }
+      },
+      approvedBy: {
+        select: {
+          name: true,
+        }
+      }
+    },
   });
 
-  return employee;
-}
-
-
-
-
-// DELETE: Remove an employee by Cin
-export async function deleteEmployee(cin: string) {
-  const employee = await prisma.user.delete({
-    where: { cin },
-  });
-  return employee;
+  return leaveRequest;
 }
