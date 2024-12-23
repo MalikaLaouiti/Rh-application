@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import { Providers } from "./provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,7 +41,9 @@ export default function RootLayout({
             </Link>
           </nav>
         </header>
-        <main className={inter.className}>{children}</main>
+        <main className={inter.className}>
+        <Providers >{children}</Providers>
+        </main>
       
         <footer className="bg-muted p-6 pl-6 w-full ">
           <div className="container max-w-7xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-8 text-sm">
