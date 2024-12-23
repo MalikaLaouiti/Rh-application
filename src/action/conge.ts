@@ -87,10 +87,10 @@ export async function getLeaveRequestsByCriteria(criteria: {
 }
 
 // READ: Get a specific leave request by ID
-export async function getLeaveRequestById(id: string) {
-  console.log(id);
-  const leaveRequest = await prisma.conge.findUnique({
-    where: { id : id },
+export async function getLeaveRequestById(cin: string) {
+  console.log(cin);
+  const leaveRequest = await prisma.conge.findMany({
+    where: { employeeCin: cin },
     include: {
       requestedBy: {
         select: {
@@ -160,9 +160,9 @@ export async function deleteLeaveRequest(id: string) {
 }
 
 // Additional utility function: Approve a leave request
-export async function approveLeaveRequest(id: string, approverId: string) {
+export async function approveLeaveRequest(id : string, approverId: string) {
   const leaveRequest = await prisma.conge.update({
-    where: { id },
+    where: { id},
     data: {
       status: 'Approved',
       approvedById: approverId,

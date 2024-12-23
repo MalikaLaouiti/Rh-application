@@ -278,7 +278,7 @@ export default function Conge() {
                         <p className="text-sm text-gray-500">Type: {leaveType}</p>
                         <p className="text-sm text-gray-500">Motif: {reason}</p>
                       </div>
-                      <p className={`text-sm font-medium text-${statusColor.replace('bg-', '')}`}>
+                      <p className={`text-sm font-medium text-${statusColor}`}>
                         {statusText}
                       </p>
                     </div>
