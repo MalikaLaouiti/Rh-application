@@ -7,6 +7,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Toast } from "@/components/ui/toast"
 import { UserIcon, CalendarIcon, ClockIcon } from "lucide-react"
 
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation"
+
+  
+
+
 // Mock data for the employee
 const employeeData = {
   name: "Alice Dubois",
@@ -34,13 +40,28 @@ export default function EmployeeDashboard({ idUser }: { idUser: number }) {
     })
     setIsLeaveRequestDialogOpen(false)
   }
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login')
+    },
+  })
+
+  if (status === "loading") {
+    return <div>Loading...</div>
+  }
 
   return (
+    
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
+      <div>
+      <h1>Welcome {session.user.name}</h1>
+      <p>Your email: {session.user.email}</p>
+      </div>
         <div className="flex items-center space-x-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={employeeData.avatar} alt={employeeData.name} />
+            <AvatarImage src={ employeeData.avatar} alt={employeeData.name} />
             <AvatarFallback>{employeeData.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
           </Avatar>
           <div>
