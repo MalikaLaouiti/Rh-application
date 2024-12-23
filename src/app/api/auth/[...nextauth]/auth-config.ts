@@ -24,7 +24,7 @@ export const authOptions: AuthOptions = {
         role: { label: "Role", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password || !credentials?.name || !credentials?.role) {
+        if (!credentials?.email || !credentials?.password ) {
           throw new Error("Missing credentials");
         }
 
