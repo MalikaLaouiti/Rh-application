@@ -41,7 +41,7 @@ export default function Login() {
       }
       console.log(result);
       toast.success("Bienvenue !");
-      window.location.href = result?.url || "/Holiday/Demande"; // Specify default redirect
+      window.location.href = result?.url || "/User/Account"; // Specify default redirect
     } catch (error) {
       console.error("Failed to sign in:", error);
       toast.error("Une erreur s'est produite. Veuillez réessayer.");

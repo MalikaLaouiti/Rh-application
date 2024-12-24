@@ -6,7 +6,7 @@ export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token
     const isAuth = !!token
-    const isAuthPage = req.nextUrl.pathname.startsWith('/login')
+    const isAuthPage = req.nextUrl.pathname.startsWith('/Login')
 
     if (isAuthPage) {
       if (isAuth) {
@@ -19,7 +19,7 @@ export default withAuth(
     }
 
     if (!isAuth) {
-      return NextResponse.redirect(new URL('/login', req.url))
+      return NextResponse.redirect(new URL('/Login', req.url))
     }
 
     // Handle route protection based on user role
@@ -36,5 +36,5 @@ export default withAuth(
 
 // Specify protected routes
 export const config = {
-  matcher: ['/Admin/:path*', '/User/:path*', '/login']
+  matcher: ['/Admin/:path*', '/User/:path*', '/Login']
 }
