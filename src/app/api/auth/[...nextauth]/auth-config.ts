@@ -11,8 +11,8 @@ export const authOptions: AuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: '/Login',
-    error: '/Login', // Error code passed in query string as ?error=
+    signIn: '/User/Account', // Custom sign-in page
+    error: '/Error', // Error code passed in query string as ?error=
   },
   providers: [
     CredentialsProvider({
@@ -66,7 +66,9 @@ export const authOptions: AuthOptions = {
       }
       return session;
     },
+    
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);

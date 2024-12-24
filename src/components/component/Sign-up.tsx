@@ -183,7 +183,7 @@ export default function signUp() {
           <ToastContainer />
           <div className="text-center text-sm text-muted-foreground">
             J'ai un compte{" "}
-            <Link href="/Login" className="font-medium underline underline-offset-4 hover:text-primary" prefetch={false}>
+            <Link href="/login" className="font-medium underline underline-offset-4 hover:text-primary" prefetch={false}>
               Sign in
             </Link>
           </div>
