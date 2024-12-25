@@ -1,6 +1,5 @@
 "use client"
 import Link from "next/link"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
@@ -9,7 +8,11 @@ import { CalendarDaysIcon } from "@/components/ui/calendar-icon"
 import { CalendarPlusIcon } from "@/components/ui/calendarPlus"
 import { CalendarCheckIcon } from "@/components/ui/calendarCheck"
 
-export default function solde() {
+type SoldeProps = {
+  idUser: number;
+};
+
+const Solde = () =>  {
   return (
     <div className="flex flex-col w-full min-h-screen bg-background">
       <header className="flex items-center h-16 px-4 border-b border-muted shrink-0 md:px-6">
@@ -166,3 +169,4 @@ export default function solde() {
     </div>
   )
 }
+export default Solde;

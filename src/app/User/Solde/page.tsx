@@ -1,13 +1,14 @@
-
 import React from 'react';
-import Profile from '@/components/component/manage-account';
+import Solde from '@/components/component/solde';
 
-const ProfilePage = () => {
+    
+const SoldePage= () => {
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <Profile />
+      <Solde  />
     </div>
   );
 };
 
-export default ProfilePage;
+export default SoldePage;

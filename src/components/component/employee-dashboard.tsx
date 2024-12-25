@@ -12,21 +12,9 @@ import { useSession } from "next-auth/react"
 import { redirect } from "next/navigation"
 
 
-
-export default function employeeDashboard({ idUser }: { idUser: number }) {
-  const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
-  const [isLeaveBalanceDialogOpen, setIsLeaveBalanceDialogOpen] = useState(false);
-  const [isLeaveRequestDialogOpen, setIsLeaveRequestDialogOpen] = useState(false);
+export default function employeeDashboard() {
   const [userData, setUserData] = useState<any>(null);
 
-  const handleLeaveRequest = () => {
-    // Here you would typically send this data to your backend
-    Toast({
-      title: "Demande de congé",
-      description: "Votre demande de congé a été soumise avec succès.",
-    })
-    setIsLeaveRequestDialogOpen(false)
-  }
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -76,6 +64,7 @@ export default function employeeDashboard({ idUser }: { idUser: number }) {
           <h3 className="font-semibold mb-2">Informations personnelles</h3>
           <InfoItem icon={Mail} label="Email" value={userData?.email} />
           <InfoItem icon={Phone} label="Téléphone" value={userData?.phone_number} />
+          <InfoItem icon={Phone} label="Contact d'urgence" value={userData?.emergency_contact} />
           <InfoItem icon={MapPin} label="Adresse" value={userData?.address} />
           <InfoItem icon={Calendar} label="Date de naissance" value={userData?.date_of_birth ? new Date(userData.date_of_birth).toLocaleDateString() : "N/A"} />
           <InfoItem icon={MapPin} label="Lieu de naissance" value={userData?.place_of_birth} />
@@ -86,21 +75,28 @@ export default function employeeDashboard({ idUser }: { idUser: number }) {
         </div>
         <div>
           <h3 className="font-semibold mb-2">Informations professionnelles</h3>
+          <InfoItem icon={GraduationCap} label="Éducation" value={userData?.education} />
           <InfoItem icon={Briefcase} label="Poste" value={userData?.job_title} />
           <InfoItem icon={Calendar} label="Date d'embauche" value={userData?.hire_date ? new Date(userData.hire_date).toLocaleDateString() : "N/A"} />
           <InfoItem label="Salaire" value={userData?.salary ? `${userData?.salary.toFixed(2)} €` : undefined} />
           <InfoItem label="Grade" value={userData?.grade} />
           <InfoItem label="Solde de congés total" value={userData?.total_leave_balance?.toString()} />
           <InfoItem label="Solde de congés restant" value={userData?.remaining_leave_balance?.toString()} />
-          <InfoItem icon={GraduationCap} label="Éducation" value={userData?.education} />
         </div>
       </CardContent>
       <Separator />
       <CardFooter className="flex justify-between mt-4">
-        <InfoItem icon={Phone} label="Contact d'urgence" value={userData?.emergency_contact} />
-        <Button variant="outline">Modifier les informations</Button>
+        <a href="/Formulaire" className="no-underline">
+          <Button variant="outline">Modifier les informations</Button>
+        </a>
+        <a href="/Admin/Document" className="no-underline">
+          <Button variant="outline">Demander un document</Button>
+        </a>
+        <a href="/Holiday/Demande" className="no-underline">
+          <Button variant="outline">Demander un congé</Button>
+        </a>
       </CardFooter>
-    </Card>
+    </Card >
 
   )
 }
