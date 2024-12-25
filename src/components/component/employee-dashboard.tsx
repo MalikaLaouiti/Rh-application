@@ -46,6 +46,17 @@ export default function employeeDashboard() {
     return <div>Loading...</div>
   }
 
+  function InfoItem({ icon: Icon, label, value }: { icon?: React.ElementType, label: string, value: string | undefined }) {
+    if (!value) return null
+    return (
+      <div className="flex items-center mb-2">
+        {Icon && <Icon className="w-4 h-4 mr-2 text-muted-foreground" />}
+        <span className="text-sm font-medium mr-2">{label}:</span>
+        <span className="text-sm">{value}</span>
+      </div>
+    )
+  }
+
   return (
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader className="flex flex-row items-center gap-4 pb-2">
@@ -98,15 +109,5 @@ export default function employeeDashboard() {
       </CardFooter>
     </Card >
 
-  )
-}
-function InfoItem({ icon: Icon, label, value }: { icon?: React.ElementType, label: string, value: string | undefined }) {
-  if (!value) return null
-  return (
-    <div className="flex items-center mb-2">
-      {Icon && <Icon className="w-4 h-4 mr-2 text-muted-foreground" />}
-      <span className="text-sm font-medium mr-2">{label}:</span>
-      <span className="text-sm">{value}</span>
-    </div>
   )
 }

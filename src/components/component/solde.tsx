@@ -1,5 +1,4 @@
-"use client"
-import Link from "next/link"
+'use client';
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
@@ -7,43 +6,103 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { CalendarDaysIcon } from "@/components/ui/calendar-icon"
 import { CalendarPlusIcon } from "@/components/ui/calendarPlus"
 import { CalendarCheckIcon } from "@/components/ui/calendarCheck"
+import { useEffect, useState } from "react"
+import { redirect } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { deleteLeaveRequest, getLeaveRequestById, updateLeaveRequest } from "@/action/conge"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import EditLeaveRequest from "./editLeaveCard";
 
-type SoldeProps = {
-  idUser: number;
-};
 
-const Solde = () =>  {
+const Solde = () => {
+  const [userData, setUserData] = useState<any>(null);
+  const [leaveList, setLeaveList] = useState<any[]>([]); // State for leave requests
+  const [cin, setCin] = useState<string>(""); // State for CIN
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<{ id: string; leaveType: string; startDate: string; endDate: string; reason: string; } | null>(null);
+  const [error, setError] = useState<string>("");
+
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/login')
+    },
+  })
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.id) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`/api/users/${session.user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setUserData(data.user);
+            setCin(data.user.cin);
+          } else {
+            setError("Failed to fetch user data");
+          }
+        } catch (error) {
+          setError("Error fetching user data");
+          console.error("Error fetching user data:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [status, session]);
+
+  // Fetch leave requests based on CIN
+  const fetchLeaveRequests = async (cin: string) => {
+    if (cin.trim()) {
+      try {
+        const result = await getLeaveRequestById(cin);
+        if (Array.isArray(result)) {
+          setLeaveList(result);
+        } else if (result) {
+          setLeaveList([result]);
+        } else {
+          setLeaveList([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch leave requests:", error);
+        setLeaveList([]);
+        setError("Erreur lors de la recherche des demandes");
+      }
+    } else {
+      setLeaveList([]);
+    }
+  };
+
+  useEffect(() => {
+    if (cin) {
+      fetchLeaveRequests(cin);
+    }
+  }, [cin]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>
+  }
+
+  const displayEditCard = (request: any) => {
+    setSelectedRequest(request);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateRequest = async (id: string, updatedData: any) => {
+    try {
+      await updateLeaveRequest(id, updatedData);
+      await fetchLeaveRequests(cin);
+      setError("");
+    } catch (error) {
+      console.error("Failed to update leave request:", error);
+      throw error;
+    }
+  };
   return (
     <div className="flex flex-col w-full min-h-screen bg-background">
       <header className="flex items-center h-16 px-4 border-b border-muted shrink-0 md:px-6">
         <nav className="flex-col hidden gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-          <Link href="#" className="flex items-center gap-2 text-lg font-semibold md:text-base" prefetch={false}>
-            <CalendarDaysIcon className="w-6 h-6" />
-            <span className="sr-only">Congés</span>
-          </Link>
-          {/* <Link href="#" className="font-bold" prefetch={false}>
-            Tableau de bord
-          </Link>*/}
-          <Link href="#" className="text-muted-foreground" prefetch={false}>
-            Mes congés
-          </Link> 
-          {/* <Link href="#" className="text-muted-foreground" prefetch={false}>
-            Demandes
-          </Link> */}
+          <h1 className="sr-only">Congés</h1>
         </nav>
-        {/* <div className="flex items-center w-full gap-4 md:ml-auto md:gap-2 lg:gap-4">
-          <Button variant="ghost" size="sm" className="rounded-full">
-            <img
-              src="/placeholder.svg"
-              width="32"
-              height="32"
-              className="rounded-full"
-              alt="Avatar"
-              style={{ aspectRatio: "32/32", objectFit: "cover" }}
-            />
-            <span className="sr-only">Toggle user menu</span>
-          </Button>
-        </div> */}
       </header>
       <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -74,99 +133,83 @@ const Solde = () =>  {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                <Button variant="outline" size="sm">
-                  Faire une demande
-                </Button>
+                <a href="/Holiday/Demande" className="text-primary">
+                  <Button variant="outline" size="sm">
+                    Faire une demande
+                  </Button>
+                </a>
               </div>
               <p className="text-xs text-muted-foreground">Demandez vos congés</p>
             </CardContent>
           </Card>
         </div>
+
         <div>
           <Card>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Employé</TableHead>
-                  <TableHead>Solde</TableHead>
-                  <TableHead>Pris</TableHead>
-                  <TableHead>Demandes</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                  <TableHead>Type de congé</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Date de demande</TableHead>
+                  <TableHead>Raison</TableHead>
+                  <TableHead >Actions</TableHead>
+                  {leaveList.some(request => request.status === "Approuvé") && (
+                    <TableHead className="text-right">Date d'approbation</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <Avatar>
-                        <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                        <AvatarFallback>JD</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">John Doe</p>
-                        <p className="text-sm text-muted-foreground">Développeur</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>30 jours</TableCell>
-                  <TableCell>5 jours</TableCell>
-                  <TableCell>2</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm">
-                      Gérer
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <Avatar>
-                        <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                        <AvatarFallback>JD</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">Jane Doe</p>
-                        <p className="text-sm text-muted-foreground">Designer</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>25 jours</TableCell>
-                  <TableCell>15 jours</TableCell>
-                  <TableCell>1</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm">
-                      Gérer
-                    </Button>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-2">
-                      <Avatar>
-                        <AvatarImage src="/placeholder-user.jpg" alt="Avatar" />
-                        <AvatarFallback>JD</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">Bob Smith</p>
-                        <p className="text-sm text-muted-foreground">Product Manager</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>20 jours</TableCell>
-                  <TableCell>8 jours</TableCell>
-                  <TableCell>3</TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm">
-                      Gérer
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                {leaveList.map((request) => (
+                  <TableRow key={request.id}>
+                    <TableCell>{request.leaveType}</TableCell>
+                    <TableCell>{request.status}</TableCell>
+                    <TableCell>{new Date(request.requestedAt).toLocaleDateString()}</TableCell>
+                    <TableCell>{request.reason}</TableCell>
+                    <TableCell className="text-right">
+                      <select
+                        onChange={async (e) => {
+                          const action = e.target.value;
+                          if (action === "modifier") {
+                            // Trigger logic to display card or modal for editing the request
+                            displayEditCard(request);
+                          } else if (action === "delete") {
+                            // Trigger delete with confirmation
+                            if (window.confirm("Êtes-vous sûr de vouloir supprimer cette demande ?")) {
+                              await deleteLeaveRequest(request.id);
+                            }
+                          }
+                        }}
+                        defaultValue=""
+                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="" disabled className="text-gray-500">Actions</option>
+                        <option value="modifier" className="text-blue-600">Modifier</option>
+                        <option value="delete" className="text-red-600">Supprimer</option>
+                      </select>
+
+                    </TableCell>
+
+                    {request.status === "Approuvé" && (
+                      <TableCell className="text-right">{new Date(request.approvedAt).toLocaleDateString()}</TableCell>
+                    )}
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </Card>
+          {selectedRequest && (
+            <EditLeaveRequest
+              isOpen={isEditModalOpen}
+              onClose={() => setIsEditModalOpen(false)}
+              request={selectedRequest}
+              onUpdate={handleUpdateRequest}
+            />
+          )}
         </div>
       </main>
     </div>
   )
 }
+
 export default Solde;
