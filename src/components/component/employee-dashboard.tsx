@@ -1,36 +1,23 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Toast } from "@/components/ui/toast"
-import { UserIcon, CalendarIcon, ClockIcon } from "lucide-react"
-
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { Mail, Phone, MapPin, Briefcase, Calendar, GraduationCap, Users } from 'lucide-react'
 import { useSession } from "next-auth/react"
 import { redirect } from "next/navigation"
 
-  
 
 
-// Mock data for the employee
-const employeeData = {
-  name: "Alice Dubois",
-  email: "alice@example.com",
-  position: "Développeuse Full-Stack",
-  department: "Technologie",
-  avatar: "https://api.dicebear.com/6.x/avataaars/svg?seed=Alice",
-  leaveBalance: {
-    paid: 20,
-    sick: 5,
-    personal: 3,
-  },
-}
-
-export default function EmployeeDashboard({ idUser }: { idUser: number }) {
-  const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false)
-  const [isLeaveBalanceDialogOpen, setIsLeaveBalanceDialogOpen] = useState(false)
-  const [isLeaveRequestDialogOpen, setIsLeaveRequestDialogOpen] = useState(false)
+export default function employeeDashboard({ idUser }: { idUser: number }) {
+  const [isAccountDialogOpen, setIsAccountDialogOpen] = useState(false);
+  const [isLeaveBalanceDialogOpen, setIsLeaveBalanceDialogOpen] = useState(false);
+  const [isLeaveRequestDialogOpen, setIsLeaveRequestDialogOpen] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
 
   const handleLeaveRequest = () => {
     // Here you would typically send this data to your backend
@@ -47,123 +34,83 @@ export default function EmployeeDashboard({ idUser }: { idUser: number }) {
     },
   })
 
+  useEffect(() => {
+    if (status === "authenticated" && session?.user?.id) {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(`/api/users/${session.user.id}`);
+          if (response.ok) {
+            const data = await response.json();
+            setUserData(data.user);
+            console.log("User data fetched:", data.user);
+          } else {
+            console.error("Failed to fetch user data");
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [status, session]);
+
   if (status === "loading") {
     return <div>Loading...</div>
   }
 
   return (
-    
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-      <div>
-      <h1>Welcome {session.user.name}</h1>
-      <p>Your email: {session.user.email}</p>
-      </div>
-        <div className="flex items-center space-x-4">
-          <Avatar className="h-20 w-20">
-            <AvatarImage src={ employeeData.avatar} alt={employeeData.name} />
-            <AvatarFallback>{employeeData.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-          </Avatar>
-          <div>
-            <CardTitle>{employeeData.name}</CardTitle>
-            <CardDescription>{employeeData.position} - {employeeData.department}</CardDescription>
-          </div>
+    <Card className="w-full max-w-3xl mx-auto">
+      <CardHeader className="flex flex-row items-center gap-4 pb-2">
+        <Avatar className="w-24 h-24">
+          <AvatarImage src={userData?.image || undefined} alt={userData?.name || 'utilisateur'} />
+          {/* <AvatarFallback>{userData?.name?.split(' ').map((n: any[]) => n[0]).join('') || 'E'}</AvatarFallback> */}
+        </Avatar>
+        <div>
+          <h2 className="text-2xl font-bold">{userData?.name || 'Utilisateur inconnu'}</h2>
+          <p className="text-sm text-muted-foreground">{userData?.job_title || 'Pas de titre de poste'}</p>
+          <Badge variant="outline" className="mt-1">{userData?.cin || 'Pas de CIN'}</Badge>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-4 md:grid-cols-3">
-        <Dialog open={isAccountDialogOpen} onOpenChange={setIsAccountDialogOpen}>
-          <DialogTrigger asChild>
-            <div className="flex justify-center">
-              <a href="/Account">
-            <Button variant="outline" className="w-full">
-              <UserIcon className="mr-2 h-4 w-4" />
-              Mon compte
-            </Button>
-            </a>
-            </div>
-          </DialogTrigger>
-          {/* <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Informations du compte</DialogTitle>
-              <DialogDescription>Vos informations personnelles</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium">Nom:</span>
-                <span className="col-span-3">{employeeData.name}</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium">Email:</span>
-                <span className="col-span-3">{employeeData.email}</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium">Poste:</span>
-                <span className="col-span-3">{employeeData.position}</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium">Département:</span>
-                <span className="col-span-3">{employeeData.department}</span>
-              </div>
-            </div>
-          </DialogContent> */}
-        </Dialog>
-
-        <Dialog open={isLeaveBalanceDialogOpen} onOpenChange={setIsLeaveBalanceDialogOpen}>
-          <DialogTrigger asChild>
-          <div className="flex justify-center">
-          <a href="/Holiday/Solde">
-            <Button variant="outline" className="w-full">
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              Solde de congés
-            </Button>
-            </a>
-          </div>
-          </DialogTrigger>
-          {/* <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Solde de congés</DialogTitle>
-              <DialogDescription>Votre solde de congés actuel</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium">Congés payés:</span>
-                <span className="col-span-3">{employeeData.leaveBalance.paid} jours</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium">Congés maladie:</span>
-                <span className="col-span-3">{employeeData.leaveBalance.sick} jours</span>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <span className="font-medium">Congés personnels:</span>
-                <span className="col-span-3">{employeeData.leaveBalance.personal} jours</span>
-              </div>
-            </div>
-          </DialogContent> */}
-        </Dialog>
-
-        <Dialog open={isLeaveRequestDialogOpen} onOpenChange={setIsLeaveRequestDialogOpen}>
-          <DialogTrigger asChild>
-          <div className="flex justify-center">
-          <a href="/Holiday/Demande">
-            <Button variant="outline" className="w-full">
-              <ClockIcon className="mr-2 h-4 w-4" />
-              Demande de congé
-            </Button>
-          </a>
-          </div>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Demande de congé</DialogTitle>
-              <DialogDescription>Soumettez une nouvelle demande de congé</DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <p>Formulaire de demande de congé à implémenter ici.</p>
-              <Button onClick={handleLeaveRequest}>Soumettre la demande</Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+      <CardContent className="grid grid-cols-2 gap-4">
+        <div>
+          <h3 className="font-semibold mb-2">Informations personnelles</h3>
+          <InfoItem icon={Mail} label="Email" value={userData?.email} />
+          <InfoItem icon={Phone} label="Téléphone" value={userData?.phone_number} />
+          <InfoItem icon={MapPin} label="Adresse" value={userData?.address} />
+          <InfoItem icon={Calendar} label="Date de naissance" value={userData?.date_of_birth ? new Date(userData.date_of_birth).toLocaleDateString() : "N/A"} />
+          <InfoItem icon={MapPin} label="Lieu de naissance" value={userData?.place_of_birth} />
+          <InfoItem icon={Users} label="Statut marital" value={userData?.marital_status} />
+          <InfoItem label="Genre" value={userData?.gender} />
+          <InfoItem label="Dépendants" value={userData?.dependents_count?.toString()} />
+          <InfoItem label="Statut de handicap" value={userData?.disability_status ? 'Oui' : 'Non'} />
+        </div>
+        <div>
+          <h3 className="font-semibold mb-2">Informations professionnelles</h3>
+          <InfoItem icon={Briefcase} label="Poste" value={userData?.job_title} />
+          <InfoItem icon={Calendar} label="Date d'embauche" value={userData?.hire_date ? new Date(userData.hire_date).toLocaleDateString() : "N/A"} />
+          <InfoItem label="Salaire" value={userData?.salary ? `${userData?.salary.toFixed(2)} €` : undefined} />
+          <InfoItem label="Grade" value={userData?.grade} />
+          <InfoItem label="Solde de congés total" value={userData?.total_leave_balance?.toString()} />
+          <InfoItem label="Solde de congés restant" value={userData?.remaining_leave_balance?.toString()} />
+          <InfoItem icon={GraduationCap} label="Éducation" value={userData?.education} />
+        </div>
       </CardContent>
+      <Separator />
+      <CardFooter className="flex justify-between mt-4">
+        <InfoItem icon={Phone} label="Contact d'urgence" value={userData?.emergency_contact} />
+        <Button variant="outline">Modifier les informations</Button>
+      </CardFooter>
     </Card>
+
+  )
+}
+function InfoItem({ icon: Icon, label, value }: { icon?: React.ElementType, label: string, value: string | undefined }) {
+  if (!value) return null
+  return (
+    <div className="flex items-center mb-2">
+      {Icon && <Icon className="w-4 h-4 mr-2 text-muted-foreground" />}
+      <span className="text-sm font-medium mr-2">{label}:</span>
+      <span className="text-sm">{value}</span>
+    </div>
   )
 }

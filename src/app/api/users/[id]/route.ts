@@ -24,13 +24,6 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     
     const user = await prisma.user.findUnique({
       where: { id :parseInt(id)},
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-        // Add other fields you want to return
-      },
     });
 
     if (!user) {

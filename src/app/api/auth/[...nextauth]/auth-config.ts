@@ -11,7 +11,7 @@ export const authOptions: AuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: '/User/Account', // Custom sign-in page
+    signIn: '/login', // Custom sign-in page
     error: '/Error', // Error code passed in query string as ?error=
   },
   providers: [
@@ -24,35 +24,44 @@ export const authOptions: AuthOptions = {
         role: { label: "Role", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password ) {
+        console.log("Credentials received:", credentials);
+      
+        if (!credentials?.email || !credentials?.password) {
+          console.error("Missing credentials");
           throw new Error("Missing credentials");
         }
-
+      
+        // Find the user by email
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email: credentials.email },
         });
-
+      
+        console.log("User found in database:", user);
+      
         if (!user) {
+          console.error("No user found with the provided email");
           throw new Error("No user found");
         }
-
-        const isPasswordValid = await compare(credentials.password, user.password);
-
-        if (!isPasswordValid) {
+      
+        // Directly compare plain-text passwords (TEMPORARY FOR TESTING)
+        if (credentials.password !== user.password) {
+          console.error("Invalid password");
           throw new Error("Invalid password");
         }
-
+      
+        // Return user details for session token
         return {
-          id: user.id.toString(), // Ensure `id` is a string
+          id: user.id.toString(),
           email: user.email,
           name: user.name,
-          role: user.grade, // Adjust if `grade` is incorrect
+          role: user.grade, // or user.role if using role instead of grade
         };
-      },
+      }      
     }),
   ],
   callbacks: {
     async jwt({ token, user }: { token: any; user?: any }) {
+      console.log("JWT callback - Token:", token, "User:", user);
       if (user) {
         token.role = user.role;
         token.id = user.id;
@@ -60,6 +69,7 @@ export const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }: { session: any; token: any }) {
+      console.log("Session callback - Session:", session, "Token:", token);
       if (session?.user) {
         session.user.role = token.role;
         session.user.id = token.id;
