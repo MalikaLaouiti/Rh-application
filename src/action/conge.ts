@@ -115,6 +115,8 @@ export async function updateLeaveRequest(id: string, data: Prisma.CongeUnchecked
     status,
     approvedById,
     approvedAt,
+    startDate,
+    endDate,
     ...otherData
   } = data;
 
@@ -129,6 +131,14 @@ export async function updateLeaveRequest(id: string, data: Prisma.CongeUnchecked
     updateData.approvedAt = new Date(); // Set approval date when approver is set
   }
 
+  // Ensure startDate and endDate are valid Date objects or valid ISO-8601 strings
+  if (startDate) {
+    updateData.startDate = new Date(startDate as string | Date); // Convert string to Date object
+  }
+  if (endDate) {
+    updateData.endDate = new Date(endDate as string | Date); // Convert string to Date object
+  }
+
   // Perform the update
   const leaveRequest = await prisma.conge.update({
     where: { id },
@@ -138,19 +148,18 @@ export async function updateLeaveRequest(id: string, data: Prisma.CongeUnchecked
         select: {
           name: true,
           department: true,
-        }
+        },
       },
       approvedBy: {
         select: {
           name: true,
-        }
-      }
+        },
+      },
     },
   });
 
   return leaveRequest;
 }
-
 // DELETE: Remove a leave request
 export async function deleteLeaveRequest(id: string) {
   const leaveRequest = await prisma.conge.delete({
