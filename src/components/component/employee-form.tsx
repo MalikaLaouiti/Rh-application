@@ -83,7 +83,8 @@ export default function EditUserForm() {
     try {
       await updateEmployee(data.cin, data); // Ensure the `updateEmployee` function is correctly defined to accept these parameters
       toast.success("Utilisateur modifié avec succès !");
-      //reset();//a tester
+      form.reset();
+      
     } catch (error) {
       console.error("Erreur lors de la mise à jour de l'employé :", error);
       toast.error("Échec de la modification de l'utilisateur.");
