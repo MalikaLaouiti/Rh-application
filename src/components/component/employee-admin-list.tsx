@@ -23,7 +23,7 @@ interface User {
   name: string;
   email: string;
   grade: string;
-  department: number
+  department: string|null
 }
 
 interface ListProps {
@@ -178,7 +178,7 @@ export default function List({ employees }: ListProps) {
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="department" className="text-right">Département</Label>
-                            <Input id="department" value={selectedUser.department} className="col-span-3" readOnly />
+                            <Input id="department" value={selectedUser.department ?? ''} className="col-span-3" readOnly />
                           </div>
                         </div>
                       )}

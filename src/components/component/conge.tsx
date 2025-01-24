@@ -194,9 +194,9 @@ export default function Conge() {
                             <SelectValue placeholder="Choisir un type de congé" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="vacation">Vacances</SelectItem>
-                            <SelectItem value="sick">Maladie</SelectItem>
-                            <SelectItem value="training">Formation</SelectItem>
+                            <SelectItem value="Vacances">Vacances</SelectItem>
+                            <SelectItem value="Maladie">Maladie</SelectItem>
+                            <SelectItem value="Formation">Formation</SelectItem>
                           </SelectContent>
                         </Select>
                       </FormControl>

@@ -89,7 +89,7 @@ export default function employeeDashboard() {
           <InfoItem icon={GraduationCap} label="Éducation" value={userData?.education} />
           <InfoItem icon={Briefcase} label="Poste" value={userData?.job_title} />
           <InfoItem icon={Calendar} label="Date d'embauche" value={userData?.hire_date ? new Date(userData.hire_date).toLocaleDateString() : "N/A"} />
-          <InfoItem label="Salaire" value={userData?.salary ? `${userData?.salary.toFixed(2)} €` : undefined} />
+          <InfoItem label="Salaire" value={userData?.salary ? `${userData?.salary.toFixed(2)} TND` : undefined} />
           <InfoItem label="Grade" value={userData?.grade} />
           <InfoItem label="Solde de congés total" value={userData?.total_leave_balance?.toString()} />
           <InfoItem label="Solde de congés restant" value={userData?.remaining_leave_balance?.toString()} />
