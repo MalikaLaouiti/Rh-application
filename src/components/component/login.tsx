@@ -30,16 +30,19 @@ export default function Login() {
   const onSubmit = async (values: LoginForm) => {
     try {
       const result = await signIn("credentials", {
-        redirect: true,
+        redirect: false, // Disable automatic redirection
         email: values.email,
         password: values.password,
       });
-      console.log(values);
+  
+      console.log("Login result:", result);
+  
       if (result?.error) {
         toast.error("Échec de connexion: " + result.error);
         return;
       }
-      console.log(result);
+  
+      // If no error, assume login was successful
       toast.success("Bienvenue !");
       window.location.href = result?.url || "/User"; // Specify default redirect
     } catch (error) {

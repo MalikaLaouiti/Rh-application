@@ -99,9 +99,6 @@ export async function updateEmployee(cin: string, data: Prisma.UserUncheckedUpda
   return employee;
 }
 
-
-
-
 // DELETE: Remove an employee by Cin
 export async function deleteEmployee(cin: string) {
   const employee = await prisma.user.delete({
@@ -109,7 +106,6 @@ export async function deleteEmployee(cin: string) {
   });
   return employee;
 }
-
 
   // const address = data.get('address') ;
   // const emergency_contact = data.get('emergency_contact') ;

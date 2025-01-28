@@ -2,7 +2,7 @@ import NextAuth, { AuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/server/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcrypt-ts"; // Secure password comparison
+import { compare, hash } from "bcrypt-ts"; // Secure password comparison
 import { se } from "date-fns/locale";
 
 export const authOptions: AuthOptions = {
@@ -22,9 +22,12 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
+      
       async authorize(credentials) {
         console.log("Credentials received:", credentials);
-
+        // Hash the new password
+        const hashedNewPassword = credentials ? await hash(credentials.password, 10) : '';
+        console.log("Hashed password:", hashedNewPassword);
         if (!credentials?.email || !credentials?.password) {
           console.error("Missing credentials");
           throw new Error("Missing credentials");

@@ -10,8 +10,9 @@ export default withAuth(
 
     if (isAuthPage) {
       if (isAuth) {
+        console.log(token.role);
         return NextResponse.redirect(new URL(
-          token.role === 'Admin' ? '/Admin/Administration' : '/User/Account',
+          token.role == 'Admin' ? '/Admin/Administration' : '/User/Account',
           req.url
         ))
       }
