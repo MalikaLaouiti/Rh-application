@@ -9,6 +9,7 @@ import { signIn } from "next-auth/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import 'react-toastify/dist/ReactToastify.css';
+import router from "next/router";
 
 const loginSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -35,7 +36,6 @@ export default function Login() {
         password: values.password,
       });
   
-      console.log("Login result:", result);
   
       if (result?.error) {
         toast.error("Échec de connexion: " + result.error);
