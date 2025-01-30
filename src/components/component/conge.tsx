@@ -87,6 +87,14 @@ export default function Conge() {
       await createLeaveRequest(formDataToSubmit);
       toast.success("Demande créée avec succès !");
       fetchLeaveRequests(data.employeeCin);
+      // Reset form to initial values
+      form.reset({
+        employeeCin: "",
+        startDate: "",
+        endDate: "",
+        leaveType: "", // Reset to default value
+        reason: "",
+      });
     } catch (error) {
       console.error("Failed to create LeaveRequest:", error);
       toast.error("Échec de la création de la demande.");
@@ -189,12 +197,12 @@ export default function Conge() {
                     <FormItem>
                       <FormLabel>Type de congé</FormLabel>
                       <FormControl>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <SelectTrigger>
                             <SelectValue placeholder="Choisir un type de congé" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Vacances">Vacances</SelectItem>
+                            <SelectItem value="Vacances" >Vacances</SelectItem>
                             <SelectItem value="Maladie">Maladie</SelectItem>
                             <SelectItem value="Formation">Formation</SelectItem>
                           </SelectContent>

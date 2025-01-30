@@ -31,7 +31,7 @@ export default function Login() {
   const onSubmit = async (values: LoginForm) => {
     try {
       const result = await signIn("credentials", {
-        redirect: false, // Disable automatic redirection
+        redirect: true, // Disable automatic redirection
         email: values.email,
         password: values.password,
       });

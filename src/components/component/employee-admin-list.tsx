@@ -62,6 +62,12 @@ export default function List({ employees }: ListProps) {
 
   };
 
+  const resetForm = () => {
+    setSearchTerm('');
+    setSelectedFilter(undefined);
+    setSelectedUser(null);
+  };
+
   const handleValueChange = (value: string) => {
     setSelectedFilter(value);
   };
@@ -69,7 +75,7 @@ export default function List({ employees }: ListProps) {
     try {
       await deleteEmployee(data.cin,); 
       toast.success("Utilisateur supprimé avec succès !");
-      //reset();//a tester
+      resetForm();//a tester
     } catch (error) {
       console.error("Erreur lors de la suppression de l'employé :", error);
       toast.error("Échec de la suppression de l'utilisateur.");
