@@ -62,7 +62,7 @@ export default function EmployeeList({ employees }: ListProps) {
         user.cin,
         user.name,
         user.email,
-        user.grade,
+        user.grade || 'N/A',
         user.department || 'N/A'
       ]),
       startY: 20
