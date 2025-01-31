@@ -112,7 +112,7 @@ const Solde = () => {
               <CalendarDaysIcon className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{userData.total_leave_balance}</div>
+              <div className="text-2xl font-bold">{userData?.total_leave_balance}</div>
               <p className="text-xs text-muted-foreground">Restants cette année</p>
             </CardContent>
           </Card>
@@ -122,7 +122,7 @@ const Solde = () => {
               <CalendarCheckIcon className="w-4 h-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{userData.remaining_leave_balance}</div>
+              <div className="text-2xl font-bold">{userData?.remaining_leave_balance}</div>
               <p className="text-xs text-muted-foreground">Cette année</p>
             </CardContent>
           </Card>
