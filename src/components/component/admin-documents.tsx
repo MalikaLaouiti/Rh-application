@@ -102,8 +102,8 @@ export default function Doc() {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Gestion des documents administratifs</CardTitle>
-        <CardDescription>Sélectionnez, remplissez, prévisualisez et générez des documents administratifs.</CardDescription>
+        <CardTitle>Demander des documents administratifs</CardTitle>
+        <CardDescription>Demander, prévisualisez et générez des documents administratifs.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
