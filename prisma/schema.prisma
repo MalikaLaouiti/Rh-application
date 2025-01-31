@@ -92,9 +92,9 @@ model Conge {
   reason       String
   createdAt    DateTime? @default(now())
   updatedAt    DateTime? @updatedAt
-  approvedById String?
+  approvedByCIN String?
   requestedBy  User?     @relation("RequestRelation", fields:[employeeCin], references: [cin])
-  approvedBy   User?     @relation("ApprovalRelation", fields: [approvedById], references: [cin])
+  approvedBy   User?     @relation("ApprovalRelation", fields: [approvedByCIN], references: [cin])
   
 }
 
