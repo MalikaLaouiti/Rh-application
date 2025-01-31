@@ -45,6 +45,7 @@ export async function getAllEmployees() {
       email: true,
       grade: true,
       department: true,
+      image: true,
     },
   });
   return employees.map(employee => ({

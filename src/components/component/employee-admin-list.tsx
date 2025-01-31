@@ -1,5 +1,6 @@
 "use client"
-import { useState, useEffect } from "react"
+
+import { useState } from "react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,43 +10,52 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { SearchIcon, UserIcon, ShieldIcon, DownloadIcon } from "lucide-react"
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { SearchIcon, UserIcon, ShieldIcon, DownloadIcon, TrashIcon } from "lucide-react"
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import jsPDF from 'jspdf'
-import 'jspdf-autotable';
-import { deleteEmployee, getAllEmployees } from "@/action/employee";
+import 'jspdf-autotable'
 
-// User type based on Prisma schema
+import { deleteEmployee } from "@/action/employee"
+
+// User type based on Prisma schema with optional image
 interface User {
   id: number;
   cin: string;
   name: string;
   email: string;
   grade: string;
-  department: string|null
+  department: string | null;
+  image: string | null;
 }
 
 interface ListProps {
   employees: User[];
 }
 
-export default function List({ employees }: ListProps) {
+export default function EmployeeList({ employees }: ListProps) {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedFilter, setSelectedFilter] = useState<string | undefined>(undefined);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  // Filter users based on search and selected filter
+  const [selectedFilter, setSelectedFilter] = useState<keyof User | undefined>(undefined);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  // Improved filtering with type safety
   const filteredUsers = employees.filter((user) => {
     if (!selectedFilter || !searchTerm) return true;
-    const fieldValue = String(user[selectedFilter as keyof User]); // Ensure consistent comparison
-    return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const fieldValue = selectedFilter 
+      ? String(user[selectedFilter]).toLowerCase() 
+      : Object.values(user).some(val => 
+          String(val).toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    
+    return String(fieldValue).includes(searchTerm.toLowerCase());
   });
-
 
   // Export filtered users to PDF
   const exportToPDF = () => {
     const doc = new jsPDF();
     doc.text("Liste des Employés et Administrateurs", 14, 15);
+    
     (doc as any).autoTable({
       head: [['CIN', 'Nom', 'Email', 'Rôle', 'Département']],
       body: filteredUsers.map(user => [
@@ -53,35 +63,31 @@ export default function List({ employees }: ListProps) {
         user.name,
         user.email,
         user.grade,
-        user.department
+        user.department || 'N/A'
       ]),
       startY: 20
     });
+    
     doc.save("liste_employes_administrateurs.pdf");
     toast.success("Exportation réussie");
-
   };
 
-  const resetForm = () => {
-    setSearchTerm('');
-    setSelectedFilter(undefined);
-    setSelectedUser(null);
-  };
-
-  const handleValueChange = (value: string) => {
-    setSelectedFilter(value);
-  };
-  const onSubmit = async (data: User) => {
+  // Delete user handler
+  const handleDeleteUser = async (user: User) => {
     try {
-      await deleteEmployee(data.cin,); 
-      toast.success("Utilisateur supprimé avec succès !");
-      resetForm();//a tester
+      await deleteEmployee(user.cin);
+      toast.success(`Utilisateur ${user.name} supprimé avec succès !`);
+      // Additional logic for removing user from list can be added here
     } catch (error) {
       console.error("Erreur lors de la suppression de l'employé :", error);
       toast.error("Échec de la suppression de l'utilisateur.");
     }
   };
-  const user = getAllEmployees();
+
+  // Generate avatar fallback
+  const getAvatarFallback = (name: string) => 
+    name.split(' ').map(n => n[0]).join('').toUpperCase();
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -97,31 +103,32 @@ export default function List({ employees }: ListProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4 relative">
-          <Select value={selectedFilter} onValueChange={handleValueChange}>
+        <div className="mb-4 flex space-x-4 ">
+          <div className="w-3/5">
+            <Select value={selectedFilter} onValueChange={(val) => setSelectedFilter(val as keyof User)}>
             <SelectTrigger>
               <SelectValue placeholder="Rechercher selon :" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="id">ID</SelectItem>
-              <SelectItem value="name">nom et prenom</SelectItem>
-              <SelectItem value="department">départment</SelectItem>
+              <SelectItem value="cin">CIN</SelectItem>
+              <SelectItem value="name">Nom & Prenom</SelectItem>
+              <SelectItem value="department">Département</SelectItem>
+              <SelectItem value="grade">Rôle</SelectItem>
             </SelectContent>
-          </Select>
-        </div>
-        <div className="mb-4">  
-          <Label htmlFor="search" className="sr-only">Rechercher</Label>
-          <div className="relative">
+            </Select>
+          </div>
+          
+          <div className="flex-grow relative">
             <SearchIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              id="search"
               placeholder="Rechercher par nom, email ou département"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8"
+              className="pl-7"
             />
           </div>
         </div>
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -130,7 +137,7 @@ export default function List({ employees }: ListProps) {
               <TableHead>Email</TableHead>
               <TableHead>Rôle</TableHead>
               <TableHead>Département</TableHead>
-              <TableHead>Action</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -145,8 +152,8 @@ export default function List({ employees }: ListProps) {
                     {user.grade}
                   </Badge>
                 </TableCell>
-                <TableCell>{user.department}</TableCell>
-                <TableCell>
+                <TableCell>{user.department || 'N/A'}</TableCell>
+                <TableCell className="flex space-x-2">
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline" size="sm" onClick={() => setSelectedUser(user)}>
@@ -155,52 +162,59 @@ export default function List({ employees }: ListProps) {
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px]">
                       <DialogHeader>
-                        <DialogTitle>Profil de {selectedUser?.name}</DialogTitle>
+                        <DialogTitle>Profil de {user.name}</DialogTitle>
                         <DialogDescription>Détails du profil de l'utilisateur</DialogDescription>
                       </DialogHeader>
-                      {selectedUser && (
-                        <div className="grid gap-4 py-4">
-                          <div className="flex items-center justify-center">
-                            <Avatar className="h-24 w-24">
-                              <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${selectedUser.name}`} alt={selectedUser.name} />
-                              <AvatarFallback>{selectedUser.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                            </Avatar>
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="CIN" className="text-right">CIN</Label>
-                            <Input id="CIN" value={selectedUser.cin} className="col-span-3" readOnly />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">Nom</Label>
-                            <Input id="name" value={selectedUser.name} className="col-span-3" readOnly />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="email" className="text-right">Email</Label>
-                            <Input id="email" value={selectedUser.email} className="col-span-3" readOnly />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="grade" className="text-right">Rôle</Label>
-                            <Input id="grade" value={selectedUser.grade} className="col-span-3" readOnly />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="department" className="text-right">Département</Label>
-                            <Input id="department" value={selectedUser.department ?? ''} className="col-span-3" readOnly />
-                          </div>
+                      <div className="grid gap-4 py-4">
+                        <div className="flex items-center justify-center">
+                          <Avatar className="w-24 h-24">
+                            <AvatarImage 
+                              src={user.image || undefined} 
+                              alt={user.name} 
+                            />
+                            <AvatarFallback>
+                              {getAvatarFallback(user.name)}
+                            </AvatarFallback>
+                          </Avatar>
                         </div>
-                      )}
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="CIN" className="text-right">CIN</Label>
+                          <Input id="CIN" value={user.cin} className="col-span-3" readOnly />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="name" className="text-right">Nom</Label>
+                          <Input id="name" value={user.name} className="col-span-3" readOnly />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="email" className="text-right">Email</Label>
+                          <Input id="email" value={user.email} className="col-span-3" readOnly />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="grade" className="text-right">Rôle</Label>
+                          <Input id="grade" value={user.grade} className="col-span-3" readOnly />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="department" className="text-right">Département</Label>
+                          <Input id="department" value={user.department ?? ''} className="col-span-3" readOnly />
+                        </div>
+                      </div>
                     </DialogContent>
                   </Dialog>
-                  <Button variant="outline" size="sm" onClick={() => onSubmit(user)}>
+                  <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    onClick={() => handleDeleteUser(user)}
+                  >
+                    <TrashIcon className="mr-2 h-4 w-4" />
                     Supprimer
                   </Button>
-                  <ToastContainer />
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </CardContent>
+      <ToastContainer />
     </Card>
-
   );
 }
