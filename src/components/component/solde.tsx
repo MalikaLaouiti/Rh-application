@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react"
 import { deleteLeaveRequest, getLeaveRequestById, updateLeaveRequest } from "@/action/conge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import EditLeaveRequest from "./editLeaveCard";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 
 const Solde = () => {
@@ -167,26 +168,23 @@ const Solde = () => {
                     <TableCell>{new Date(request.requestedAt).toLocaleDateString()}</TableCell>
                     <TableCell>{request.reason}</TableCell>
                     <TableCell className="text-right">
-                      <select
-                        onChange={async (e) => {
-                          const action = e.target.value;
-                          if (action === "modifier") {
-                            // Trigger logic to display card or modal for editing the request
-                            displayEditCard(request);
-                          } else if (action === "delete") {
-                            // Trigger delete with confirmation
-                            if (window.confirm("Êtes-vous sûr de vouloir supprimer cette demande ?")) {
-                              await deleteLeaveRequest(request.id);
-                            }
+                      <Select onValueChange={async (value) => {
+                        if (value === "modifier") {
+                          displayEditCard(request);
+                        } else if (value === "delete") {
+                          if (window.confirm("Êtes-vous sûr de vouloir supprimer cette demande ?")) {
+                            await deleteLeaveRequest(request.id);
                           }
-                        }}
-                        defaultValue=""
-                        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value="" disabled className="text-gray-500">Actions</option>
-                        <option value="modifier" className="text-blue-600">Modifier</option>
-                        <option value="delete" className="text-red-600">Supprimer</option>
-                      </select>
+                        }
+                      }}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Actions" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="modifier" className="text-blue-400">Modifier</SelectItem>
+                          <SelectItem value="delete" className="text-red-400">Supprimer</SelectItem>
+                        </SelectContent>
+                      </Select>
 
                     </TableCell>
 

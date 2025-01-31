@@ -21,6 +21,16 @@ interface EditLeaveRequestProps {
   onUpdate: (id: string, formData: { leaveType: string; startDate: string; endDate: string; reason: string }) => Promise<void>;
 }
 
+// Constants
+const CONSTANTS = {
+  DEBOUNCE_DELAY: 500,
+  LEAVE_TYPES: {
+    VACATION: 'Vacances',
+    SICK: 'Maladie',
+    TRAINING: 'Formation',
+  },
+};
+
 const EditLeaveRequest: React.FC<EditLeaveRequestProps> = ({ isOpen, onClose, request, onUpdate }) => {
   const [formData, setFormData] = useState({
     leaveType: request?.leaveType || '',
@@ -96,15 +106,18 @@ const EditLeaveRequest: React.FC<EditLeaveRequestProps> = ({ isOpen, onClose, re
             <Select
               value={formData.leaveType}
               onValueChange={(value) => setFormData({ ...formData, leaveType: value })}
-              
+
             >
               <SelectTrigger>
                 <SelectValue placeholder="Sélectionnez le type de congé" />
               </SelectTrigger>
+              <SelectValue placeholder="Choisir un type de congé" />
               <SelectContent>
-                <SelectItem value="Congé annuel">Congé annuel</SelectItem>
-                <SelectItem value="Congé maladie">Congé maladie</SelectItem>
-                <SelectItem value="Congé exceptionnel">Congé exceptionnel</SelectItem>
+                {Object.values(CONSTANTS.LEAVE_TYPES).map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
