@@ -26,7 +26,12 @@ interface LeaveRequest {
     } | null;
 }
 export default function LeaveRequestsTable() {
-
+    const { data: session, status } = useSession({
+        required: true,
+        onUnauthenticated() {
+            redirect('/login')
+        },
+    })
     const [isLoading, setIsLoading] = useState(true);
     const [cin, setCin] = useState<any>(null);
     const [requests, setRequests] = useState<LeaveRequest[]>([]);
@@ -34,6 +39,31 @@ export default function LeaveRequestsTable() {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [filteredRequests, setFilteredRequests] = useState<LeaveRequest[]>([]);
+
+    useEffect(() => {
+        
+        if (status === "authenticated" && session?.user?.role === "Employee") {
+            <h1>Vous n'avez pas les droits nécessaires pour accéder à cette page</h1>
+        }    
+        if (status === "authenticated" && session?.user?.role === "Admin") {
+            const fetchData = async () => {
+                try {
+                    const response = await fetch(`/api/users/${session.user.id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setCin(data.user.cin);
+                    } else {
+                        setError("Failed to fetch user data");
+                    }
+                } catch (error) {
+                    setError("Error fetching user data");
+                    console.error("Error fetching user data:", error);
+                }
+            };
+            fetchData();
+        }
+    }, [status, session]);
+    console.log("CIN:", cin);
 
     const [dateRangeFilter, setDateRangeFilter] = useState<{
         startDate: string | null,
@@ -43,6 +73,7 @@ export default function LeaveRequestsTable() {
         endDate: null
     });
 
+    
     const getBadgeVariant = (status: string) => {
         switch (status) {
             case "Approuvée":
@@ -71,11 +102,12 @@ export default function LeaveRequestsTable() {
         fetchRequests();
     }, []);
 
+
     // Handle request approval
     const handleApprove = async (id: string) => {
         try {
             const updateData = {
-                approvedById: cin,
+                approvedByCIN: cin,
                 approvedAt: new Date().toISOString(),
                 status: 'Approuvée'
             };
@@ -93,7 +125,7 @@ export default function LeaveRequestsTable() {
     const handleReject = async (id: string) => {
         try {
             const updateData = {
-                approvedById: cin,
+                approvedByCIN: cin,
                 approvedAt: new Date().toISOString(),
                 status: 'Rejetée'
             };
@@ -147,14 +179,13 @@ export default function LeaveRequestsTable() {
                         placeholder="Rechercher par nom ou raison"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-1/3"
+                        className="w-3/5"
                     />
-
                     <Select
                         value={statusFilter}
                         onValueChange={(value) => setStatusFilter(value)}
                     >
-                        <SelectTrigger className="w-1/4">
+                        <SelectTrigger className="w-2/5">
                             <SelectValue placeholder="Statut" />
                         </SelectTrigger>
                         <SelectContent>
@@ -164,27 +195,6 @@ export default function LeaveRequestsTable() {
                             <SelectItem value="Rejetée">Rejetée</SelectItem>
                         </SelectContent>
                     </Select>
-
-                    <div className="flex space-x-2">
-                        <Input
-                            type="date"
-                            value={dateRangeFilter.startDate || ''}
-                            onChange={(e) => setDateRangeFilter(prev => ({
-                                ...prev,
-                                startDate: e.target.value
-                            }))}
-                            placeholder="Date de début"
-                        />
-                        <Input
-                            type="date"
-                            value={dateRangeFilter.endDate || ''}
-                            onChange={(e) => setDateRangeFilter(prev => ({
-                                ...prev,
-                                endDate: e.target.value
-                            }))}
-                            placeholder="Date de fin"
-                        />
-                    </div>
                 </div>
                 <TabsContent value="leave-requests">
                     {isLoading ? (

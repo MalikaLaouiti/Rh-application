@@ -15,6 +15,7 @@ import { redirect } from "next/navigation"
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import LeaveRequestsTable from "./LeaveRequestsTable";
+import { card } from "@nextui-org/theme";
 
 // Types
 interface LeaveRequest {
@@ -44,47 +45,24 @@ export default function Request() {
       redirect('/login')
     },
   })
-  const [cin, setCin] = useState<any>(null);
-  const [requests, setRequests] = useState<LeaveRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedDocument, setSelectedDocument] = useState<ExportedDocument | null>(null);
-  const [error, setError] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [dateRangeFilter, setDateRangeFilter] = useState<{
-    startDate: string | null,
-    endDate: string | null
-  }>({
-    startDate: null,
-    endDate: null
-  });
-
+  if (!session || session.user.role !== "admin") {
+    return (
+      <Card>
+        <CardHeader>
+        <CardTitle className="text-center text-xl text-red-500">Accès refusé</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <CardDescription className="text-center">Vous n'êtes pas autorisé à accéder à cette page.</CardDescription>
+      </CardContent>
+      </Card>
+    )
+  }
   // Sample exported documents (you can replace this with actual data from your backend)
   const exportedDocuments = [
     { id: 1, name: "Rapport_Annuel_2022.pdf", date: "2023-06-30", type: "Rapport", content: "Contenu du rapport annuel 2022..." },
     { id: 2, name: "Liste_Employés_Juin2023.xlsx", date: "2023-07-01", type: "Liste", content: "Liste des employés mise à jour en juin 2023..." },
     { id: 3, name: "Contrats_Nouveaux_Employés_Q2.zip", date: "2023-07-15", type: "Contrats", content: "Contrats des nouveaux employés pour le deuxième trimestre..." },
   ];
-  
-  useEffect(() => {
-    if (status === "authenticated" && session?.user?.role === "admin") {
-      const fetchData = async () => {
-        try {
-          const response = await fetch(`/api/users/${session.user.id}`);
-          if (response.ok) {
-            const data = await response.json();
-            setCin(data.user.cin);
-          } else {
-            setError("Failed to fetch user data");
-          }
-        } catch (error) {
-          setError("Error fetching user data");
-          console.error("Error fetching user data:", error);
-        }
-      };
-      fetchData();
-    }
-  }, [status, session]);
 
   const handleDownload = (doc: ExportedDocument) => {
     // Implement your document download logic here

@@ -3,12 +3,33 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CalendarIcon, FileTextIcon, UserPlusIcon, UsersIcon, SettingsIcon, ClipboardListIcon } from "lucide-react"
 import { prisma } from '@/server/prisma';
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 
 
 export default async function Dash() {
   const userCount = await prisma.user.count();
-  
+  const { data: session, status } = useSession({
+      required: true,
+      onUnauthenticated() {
+        redirect('/login')
+      },
+    })
+
+    if (!session || session.user.role !== "admin") {
+      return (
+        <Card>
+          <CardHeader>
+          <CardTitle className="text-center text-xl text-red-500">Accès refusé</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CardDescription className="text-center">Vous n'êtes pas autorisé à accéder à cette page.</CardDescription>
+        </CardContent>
+        </Card>
+      )
+    }
+    
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-100">
       <header className="flex items-center h-16 px-4 border-b bg-white shrink-0 md:px-6">

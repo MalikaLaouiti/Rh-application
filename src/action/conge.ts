@@ -111,9 +111,10 @@ export async function getLeaveRequestById(cin: string) {
 
 // UPDATE: Update a leave request
 export async function updateLeaveRequest(id: string, data: Prisma.CongeUncheckedUpdateInput) {
+  console.log("updateData:",data);
   const {
     status,
-    approvedById,
+    approvedByCIN,
     approvedAt,
     startDate,
     endDate,
@@ -126,9 +127,9 @@ export async function updateLeaveRequest(id: string, data: Prisma.CongeUnchecked
 
   // Handle special fields
   if (status) updateData.status = status as string;
-  if (approvedById) {
-    updateData.approvedById = approvedById as string;
-    updateData.approvedAt = new Date(); // Set approval date when approver is set
+  if (approvedByCIN) {
+    updateData.approvedByCIN = approvedByCIN as string;
+    updateData.approvedAt = new Date(); 
   }
 
   // Ensure startDate and endDate are valid Date objects or valid ISO-8601 strings
@@ -152,6 +153,7 @@ export async function updateLeaveRequest(id: string, data: Prisma.CongeUnchecked
       },
       approvedBy: {
         select: {
+          cin: true,
           name: true,
         },
       },
@@ -174,7 +176,7 @@ export async function approveLeaveRequest(id : string, approverId: string) {
     where: { id},
     data: {
       status: 'Approved',
-      approvedById: approverId,
+      approvedByCIN: approverId,
       approvedAt: new Date(),
     },
     include: {
@@ -201,7 +203,7 @@ export async function rejectLeaveRequest(id: string, approverId: string) {
     where: { id },
     data: {
       status: 'Rejected',
-      approvedById: approverId,
+      approvedByCIN: approverId,
       approvedAt: new Date(),
     },
     include: {

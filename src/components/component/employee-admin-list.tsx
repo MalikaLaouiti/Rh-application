@@ -17,6 +17,8 @@ import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 
 import { deleteEmployee } from "@/action/employee"
+import { useSession } from "next-auth/react"
+import { redirect } from "next/navigation"
 
 // User type based on Prisma schema with optional image
 interface User {
@@ -34,9 +36,27 @@ interface ListProps {
 }
 
 export default function EmployeeList({ employees }: ListProps) {
+  const { data: session, status } = useSession({
+      required: true,
+      onUnauthenticated() {
+        redirect('/login')
+      },
+    })
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedFilter, setSelectedFilter] = useState<keyof User | undefined>(undefined);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  if (!session || session.user.role !== "admin") {
+    return (
+      <Card>
+        <CardHeader>
+        <CardTitle className="text-center text-xl text-red-500">Accès refusé</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <CardDescription className="text-center">Vous n'êtes pas autorisé à accéder à cette page.</CardDescription>
+      </CardContent>
+      </Card>
+    )
+  }
 
   // Improved filtering with type safety
   const filteredUsers = employees.filter((user) => {
